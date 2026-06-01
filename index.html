@@ -53,6 +53,7 @@ h1 { margin: 0; font-size: 30px; line-height: 1.12; letter-spacing: 0; }
 .btn.blue { background: var(--blue); color: #07111f; border-color: transparent; }
 .btn.ghost { background: transparent; }
 .btn.danger { color: var(--red); }
+.btn.speak { background: rgba(105,167,255,.13); color: var(--blue); }
 .btn:disabled { opacity: .5; cursor: not-allowed; }
 .tabs { position: fixed; left: 50%; bottom: 0; transform: translateX(-50%); width: min(100%, 520px); display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px; padding: 9px 12px calc(9px + env(safe-area-inset-bottom)); background: rgba(16,19,25,.92); border-top: 1px solid var(--line); backdrop-filter: blur(18px); z-index: 10; }
 .tab { min-height: 48px; border-radius: 8px; background: transparent; color: var(--muted); font-size: 12px; }
@@ -122,6 +123,7 @@ input:focus, textarea:focus { border-color: rgba(105,167,255,.75); }
       </div>
       <div class="word-main" id="focusWord">word</div>
       <div class="phonetic" id="focusPhonetic"></div>
+      <button class="btn speak" id="speakFocusBtn" style="width:100%; margin: 0 0 12px;">朗读单词</button>
       <div class="meaning" id="focusMeaning"></div>
       <div class="example" id="focusExample"></div>
       <div class="bar"><i id="todayBar"></i></div>
@@ -142,6 +144,7 @@ input:focus, textarea:focus { border-color: rgba(105,167,255,.75); }
       </div>
       <div class="prompt">根据中文意思输入英文。前 7 遍给你看单词，后 3 遍凭记忆。</div>
       <div class="hint-word" id="practiceHint"></div>
+      <button class="btn speak" id="speakPracticeBtn" style="width:100%; margin: 0 0 12px;">朗读当前单词</button>
       <div class="meaning" id="practiceMeaning"></div>
       <div class="example" id="practiceExample"></div>
       <input id="answerInput" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="输入英文单词">
@@ -404,6 +407,21 @@ function toast(msg) {
   clearTimeout(window.__toastTimer);
   window.__toastTimer = setTimeout(() => $("toast").classList.remove("show"), 1800);
 }
+function speakWord(word) {
+  if (!("speechSynthesis" in window)) {
+    toast("这个浏览器暂不支持语音");
+    return;
+  }
+  window.speechSynthesis.cancel();
+  const utterance = new SpeechSynthesisUtterance(word);
+  const voices = window.speechSynthesis.getVoices();
+  const englishVoice = voices.find(v => /^en[-_]/i.test(v.lang));
+  if (englishVoice) utterance.voice = englishVoice;
+  utterance.lang = englishVoice ? englishVoice.lang : "en-US";
+  utterance.rate = 0.82;
+  utterance.pitch = 1;
+  window.speechSynthesis.speak(utterance);
+}
 function render() {
   const todayWords = wordsForToday();
   const doneToday = todayWords.filter(w => state.done[doneKey(w.word)]).length;
@@ -553,6 +571,8 @@ $("knownBtn").addEventListener("click", () => {
   render();
   toast("已记录");
 });
+$("speakFocusBtn").addEventListener("click", () => speakWord(wordsForToday()[focusIndex].word));
+$("speakPracticeBtn").addEventListener("click", () => speakWord(currentPracticeWord().word));
 $("checkBtn").addEventListener("click", checkAnswer);
 $("skipBtn").addEventListener("click", nextPracticeWord);
 $("answerInput").addEventListener("keydown", e => { if (e.key === "Enter") checkAnswer(); });
