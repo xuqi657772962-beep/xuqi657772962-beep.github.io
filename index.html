@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="每日单词">
+<meta name="theme-color" content="#101319">
+<title>每日单词</title>
+<style>
+:root {
+  --bg: #101319;
+  --panel: #181d25;
+  --panel-2: #202733;
+  --text: #f4f1eb;
+  --muted: #9ba4b4;
+  --line: rgba(255,255,255,.09);
+  --green: #48d597;
+  --blue: #69a7ff;
+  --gold: #f4bf63;
+  --red: #ff6f6f;
+}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { margin: 0; min-height: 100%; background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+body { padding: env(safe-area-inset-top) 0 calc(82px + env(safe-area-inset-bottom)); }
+button, input, textarea { font: inherit; }
+button { border: 0; color: inherit; cursor: pointer; }
+.app { width: min(100%, 520px); margin: 0 auto; padding: 18px 16px 0; }
+.top { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; margin: 10px 0 18px; }
+.kicker { color: var(--gold); font-size: 12px; letter-spacing: .12em; margin-bottom: 7px; }
+h1 { margin: 0; font-size: 30px; line-height: 1.12; letter-spacing: 0; }
+.date { color: var(--muted); font-size: 13px; margin-top: 8px; }
+.pill { min-width: 78px; text-align: center; border: 1px solid var(--line); background: var(--panel); border-radius: 999px; padding: 8px 10px; }
+.pill strong { display: block; color: var(--green); font-size: 20px; line-height: 1; }
+.pill span { display: block; color: var(--muted); font-size: 11px; margin-top: 4px; }
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; margin-bottom: 16px; }
+.stat { min-height: 74px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 12px; }
+.stat b { display: block; font-size: 22px; line-height: 1; }
+.stat span { display: block; color: var(--muted); font-size: 12px; margin-top: 8px; }
+.today { background: linear-gradient(160deg, #1f2837, #151a22 66%); border: 1px solid var(--line); border-radius: 8px; padding: 16px; margin-bottom: 14px; }
+.section-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+.section-head h2 { margin: 0; font-size: 17px; letter-spacing: 0; }
+.small { color: var(--muted); font-size: 12px; }
+.word-main { font-size: 34px; line-height: 1; margin: 16px 0 8px; word-break: break-word; }
+.phonetic { color: var(--blue); font-size: 15px; margin-bottom: 10px; }
+.meaning { font-size: 20px; line-height: 1.35; margin-bottom: 12px; }
+.example { color: var(--muted); font-size: 14px; line-height: 1.55; border-left: 3px solid rgba(105,167,255,.5); padding-left: 10px; }
+.row { display: flex; gap: 10px; align-items: center; }
+.row > * { flex: 1; }
+.btn { min-height: 46px; border-radius: 8px; background: var(--panel-2); border: 1px solid var(--line); padding: 11px 13px; font-weight: 650; }
+.btn.primary { background: var(--green); color: #07120c; border-color: transparent; }
+.btn.blue { background: var(--blue); color: #07111f; border-color: transparent; }
+.btn.ghost { background: transparent; }
+.btn.danger { color: var(--red); }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+.tabs { position: fixed; left: 50%; bottom: 0; transform: translateX(-50%); width: min(100%, 520px); display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px; padding: 9px 12px calc(9px + env(safe-area-inset-bottom)); background: rgba(16,19,25,.92); border-top: 1px solid var(--line); backdrop-filter: blur(18px); z-index: 10; }
+.tab { min-height: 48px; border-radius: 8px; background: transparent; color: var(--muted); font-size: 12px; }
+.tab strong { display: block; font-size: 18px; line-height: 1; margin-bottom: 4px; }
+.tab.active { background: var(--panel-2); color: var(--text); }
+.view { display: none; }
+.view.active { display: block; }
+.list { display: grid; gap: 10px; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 14px; }
+.word-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.word-row b { font-size: 20px; }
+.word-row span { color: var(--muted); font-size: 13px; }
+.tag { display: inline-flex; align-items: center; min-height: 24px; border-radius: 999px; padding: 3px 9px; font-size: 12px; background: rgba(255,255,255,.06); color: var(--muted); white-space: nowrap; }
+.tag.done { background: rgba(72,213,151,.14); color: var(--green); }
+.tag.bad { background: rgba(255,111,111,.14); color: var(--red); }
+.practice { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 16px; }
+.prompt { color: var(--muted); font-size: 13px; margin-bottom: 10px; }
+.hint-word { min-height: 34px; color: var(--gold); font-size: 28px; font-weight: 800; letter-spacing: .02em; margin-bottom: 10px; }
+.hint-word.hidden { color: var(--muted); font-size: 16px; font-weight: 500; }
+input, textarea { width: 100%; min-height: 52px; border: 1px solid var(--line); border-radius: 8px; background: #0d1016; color: var(--text); padding: 13px 14px; outline: none; }
+textarea { min-height: 118px; resize: vertical; line-height: 1.45; }
+input:focus, textarea:focus { border-color: rgba(105,167,255,.75); }
+.feedback { min-height: 42px; margin: 10px 0; color: var(--muted); font-size: 14px; line-height: 1.45; }
+.feedback.ok { color: var(--green); }
+.feedback.no { color: var(--red); }
+.bar { height: 8px; background: rgba(255,255,255,.08); border-radius: 999px; overflow: hidden; margin: 12px 0 2px; }
+.bar i { display: block; height: 100%; width: 0%; background: var(--green); border-radius: inherit; transition: width .25s ease; }
+.settings { display: grid; gap: 12px; }
+.note { color: var(--muted); font-size: 13px; line-height: 1.6; }
+.empty { color: var(--muted); text-align: center; padding: 28px 8px; }
+.toast { position: fixed; left: 50%; bottom: calc(78px + env(safe-area-inset-bottom)); transform: translateX(-50%); max-width: calc(100% - 34px); background: #eef3ee; color: #101319; border-radius: 999px; padding: 10px 14px; font-size: 14px; box-shadow: 0 12px 40px rgba(0,0,0,.35); opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s; z-index: 20; }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(-6px); }
+@media (max-width: 360px) {
+  .app { padding-left: 12px; padding-right: 12px; }
+  h1 { font-size: 27px; }
+  .word-main { font-size: 30px; }
+  .stats { gap: 7px; }
+  .stat { padding: 10px; }
+}
+</style>
+</head>
+<body>
+<main class="app">
+  <header class="top">
+    <div>
+      <div class="kicker">WORD MASTER</div>
+      <h1>每日单词</h1>
+      <div class="date" id="dateText"></div>
+    </div>
+    <div class="pill">
+      <strong id="dayNo">1</strong>
+      <span>学习日</span>
+    </div>
+  </header>
+
+  <section class="stats">
+    <div class="stat"><b id="todayCount">0/10</b><span>今日完成</span></div>
+    <div class="stat"><b id="streak">0</b><span>连续天数</span></div>
+    <div class="stat"><b id="totalDone">0</b><span>累计单词</span></div>
+  </section>
+
+  <section id="view-learn" class="view active">
+    <div class="today">
+      <div class="section-head">
+        <h2>今日 10 个词</h2>
+        <span class="small" id="autoText">每天自动更新</span>
+      </div>
+      <div class="word-main" id="focusWord">word</div>
+      <div class="phonetic" id="focusPhonetic"></div>
+      <div class="meaning" id="focusMeaning"></div>
+      <div class="example" id="focusExample"></div>
+      <div class="bar"><i id="todayBar"></i></div>
+      <div class="row" style="margin-top:14px;">
+        <button class="btn" id="prevBtn">上一个</button>
+        <button class="btn primary" id="knownBtn">记住了</button>
+        <button class="btn" id="nextBtn">下一个</button>
+      </div>
+    </div>
+    <div class="list" id="wordList"></div>
+  </section>
+
+  <section id="view-practice" class="view">
+    <div class="practice">
+      <div class="section-head">
+        <h2>拼写练习</h2>
+        <span class="small" id="roundText">第 1/10 遍</span>
+      </div>
+      <div class="prompt">根据中文意思输入英文。前 7 遍给你看单词，后 3 遍凭记忆。</div>
+      <div class="hint-word" id="practiceHint"></div>
+      <div class="meaning" id="practiceMeaning"></div>
+      <div class="example" id="practiceExample"></div>
+      <input id="answerInput" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="输入英文单词">
+      <div class="feedback" id="feedback"></div>
+      <div class="row">
+        <button class="btn blue" id="checkBtn">检查</button>
+        <button class="btn ghost" id="skipBtn">跳过</button>
+      </div>
+      <div class="bar"><i id="practiceBar"></i></div>
+    </div>
+  </section>
+
+  <section id="view-review" class="view">
+    <div class="section-head">
+      <h2>错词复习</h2>
+      <button class="btn ghost" id="clearMistakes" style="min-height:36px; flex:0 0 auto;">清空</button>
+    </div>
+    <div class="list" id="mistakeList"></div>
+  </section>
+
+  <section id="view-settings" class="view">
+    <div class="settings">
+      <div class="card">
+        <div class="section-head"><h2>自动更新规则</h2></div>
+        <p class="note">你不用每天更新文件。这个 App 会记住第一次开始学习的日期，之后每次打开时按手机日期自动切换当天单词。比如今天是第 1 天，明天打开就是第 2 天。</p>
+      </div>
+      <div class="card">
+        <div class="section-head"><h2>添加自己的单词</h2></div>
+        <p class="note">每行一个：英文 | 中文 | 音标 | 例句。保存后会加入每日自动更新的词库。</p>
+        <textarea id="importBox" placeholder="abandon | 放弃 | /əˈbændən/ | Never abandon your goal."></textarea>
+        <button class="btn primary" id="importBtn" style="width:100%; margin-top:10px;">保存到词库</button>
+      </div>
+      <div class="card">
+        <div class="section-head"><h2>数据管理</h2></div>
+        <div class="row">
+          <button class="btn" id="resetStartBtn">今天重新开始</button>
+          <button class="btn danger" id="resetAllBtn">清空记录</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="section-head"><h2>手机使用</h2></div>
+        <p class="note">iPhone：用 Safari 打开这个文件的网址，点分享按钮，选择“添加到主屏幕”。Android：用 Chrome 打开，菜单里选择“添加到主屏幕”。</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<nav class="tabs">
+  <button class="tab active" data-tab="learn"><strong>书</strong>学习</button>
+  <button class="tab" data-tab="practice"><strong>写</strong>练习</button>
+  <button class="tab" data-tab="review"><strong>错</strong>复习</button>
+  <button class="tab" data-tab="settings"><strong>设</strong>设置</button>
+</nav>
+<div class="toast" id="toast"></div>
+
+<script>
+const WORDS_PER_DAY = 10;
+const STORAGE_KEY = "wordmaster_v3";
+const BUILTIN_WORDS = [
+  ["abandon","放弃","/əˈbændən/","Never abandon your goal."],
+  ["ability","能力","/əˈbɪləti/","Practice improves your ability."],
+  ["able","能够的","/ˈeɪbəl/","I am able to finish it today."],
+  ["abroad","在国外","/əˈbrɔːd/","She wants to study abroad."],
+  ["absent","缺席的","/ˈæbsənt/","He was absent from class."],
+  ["accept","接受","/əkˈsept/","Please accept my thanks."],
+  ["accident","事故","/ˈæksɪdənt/","The accident happened at night."],
+  ["achieve","实现","/əˈtʃiːv/","You can achieve your dream."],
+  ["active","积极的","/ˈæktɪv/","Stay active every day."],
+  ["address","地址；处理","/əˈdres/","Write your address here."],
+  ["advantage","优势","/ədˈvæntɪdʒ/","This method has one advantage."],
+  ["advice","建议","/ədˈvaɪs/","I need your advice."],
+  ["afford","负担得起","/əˈfɔːrd/","We cannot afford a new car."],
+  ["agree","同意","/əˈɡriː/","I agree with you."],
+  ["allow","允许","/əˈlaʊ/","They allow visitors here."],
+  ["almost","几乎","/ˈɔːlmoʊst/","Dinner is almost ready."],
+  ["alone","独自","/əˈloʊn/","He lives alone."],
+  ["although","虽然","/ɔːlˈðoʊ/","Although it rained, we went out."],
+  ["amazing","令人惊讶的","/əˈmeɪzɪŋ/","The view is amazing."],
+  ["amount","数量","/əˈmaʊnt/","A large amount of water is needed."],
+  ["ancient","古代的","/ˈeɪnʃənt/","This is an ancient city."],
+  ["announce","宣布","/əˈnaʊns/","They will announce the result."],
+  ["appear","出现","/əˈpɪr/","Stars appear at night."],
+  ["apply","申请；应用","/əˈplaɪ/","I will apply for the job."],
+  ["area","区域","/ˈeriə/","This area is quiet."],
+  ["argue","争论","/ˈɑːrɡjuː/","Do not argue with him."],
+  ["arrive","到达","/əˈraɪv/","We arrive at noon."],
+  ["article","文章","/ˈɑːrtɪkəl/","Read this article carefully."],
+  ["attention","注意力","/əˈtenʃən/","Pay attention to the details."],
+  ["average","平均的","/ˈævərɪdʒ/","The average score is high."],
+  ["avoid","避免","/əˈvɔɪd/","Avoid making the same mistake."],
+  ["balance","平衡","/ˈbæləns/","Keep a balance between work and rest."],
+  ["basic","基础的","/ˈbeɪsɪk/","Learn the basic rules first."],
+  ["behavior","行为","/bɪˈheɪvjər/","His behavior changed."],
+  ["believe","相信","/bɪˈliːv/","Believe in yourself."],
+  ["benefit","好处","/ˈbenɪfɪt/","Exercise has many benefits."],
+  ["borrow","借入","/ˈbɑːroʊ/","Can I borrow your pen?"],
+  ["brave","勇敢的","/breɪv/","She is a brave girl."],
+  ["business","商业；事情","/ˈbɪznəs/","He started a small business."],
+  ["calendar","日历","/ˈkælɪndər/","Mark the date on the calendar."],
+  ["career","职业","/kəˈrɪr/","He has a successful career."],
+  ["careful","小心的","/ˈkerfəl/","Be careful when you cross the road."],
+  ["chance","机会","/tʃæns/","This is your chance."],
+  ["change","改变","/tʃeɪndʒ/","Small habits can change life."],
+  ["choice","选择","/tʃɔɪs/","You made the right choice."],
+  ["common","常见的","/ˈkɑːmən/","This is a common problem."],
+  ["compare","比较","/kəmˈper/","Compare the two answers."],
+  ["complete","完成；完整的","/kəmˈpliːt/","Please complete the form."],
+  ["condition","条件；状况","/kənˈdɪʃən/","The room is in good condition."],
+  ["confidence","信心","/ˈkɑːnfɪdəns/","Confidence comes from practice."],
+  ["consider","考虑","/kənˈsɪdər/","Consider the problem carefully."],
+  ["continue","继续","/kənˈtɪnjuː/","Continue reading the story."],
+  ["control","控制","/kənˈtroʊl/","Control your time well."],
+  ["create","创造","/kriˈeɪt/","Artists create new ideas."],
+  ["culture","文化","/ˈkʌltʃər/","Language is part of culture."],
+  ["daily","每日的","/ˈdeɪli/","Daily practice matters."],
+  ["decide","决定","/dɪˈsaɪd/","I decide to learn English."],
+  ["develop","发展","/dɪˈveləp/","Good habits develop slowly."],
+  ["difference","差异","/ˈdɪfrəns/","There is a big difference."],
+  ["difficult","困难的","/ˈdɪfɪkəlt/","The question is difficult."],
+  ["direction","方向","/dəˈrekʃən/","Follow the direction on the map."],
+  ["discover","发现","/dɪˈskʌvər/","Scientists discover new facts."],
+  ["discuss","讨论","/dɪˈskʌs/","We discuss the plan together."],
+  ["dream","梦想","/driːm/","Hold on to your dream."],
+  ["education","教育","/ˌedʒuˈkeɪʃən/","Education changes people."],
+  ["effort","努力","/ˈefərt/","Your effort will pay off."],
+  ["encourage","鼓励","/ɪnˈkɜːrɪdʒ/","My teacher encouraged me."],
+  ["energy","精力","/ˈenərdʒi/","Sleep gives you energy."],
+  ["enough","足够的","/ɪˈnʌf/","I have enough time."],
+  ["environment","环境","/ɪnˈvaɪrənmənt/","Protect the environment."],
+  ["especially","尤其","/ɪˈspeʃəli/","I like fruit, especially apples."],
+  ["experience","经验；经历","/ɪkˈspɪriəns/","Experience helps you grow."],
+  ["explain","解释","/ɪkˈspleɪn/","Can you explain it again?"],
+  ["express","表达","/ɪkˈspres/","Express your idea clearly."],
+  ["favorite","最喜欢的","/ˈfeɪvərɪt/","Blue is my favorite color."],
+  ["focus","专注","/ˈfoʊkəs/","Focus on one task."],
+  ["foreign","外国的","/ˈfɔːrən/","She speaks a foreign language."],
+  ["forget","忘记","/fərˈɡet/","Do not forget your keys."],
+  ["future","未来","/ˈfjuːtʃər/","Plan for the future."],
+  ["habit","习惯","/ˈhæbɪt/","Reading is a good habit."],
+  ["health","健康","/helθ/","Health is important."],
+  ["improve","提高","/ɪmˈpruːv/","Practice will improve your English."],
+  ["include","包括","/ɪnˈkluːd/","The price includes breakfast."],
+  ["increase","增加","/ɪnˈkriːs/","The number will increase."],
+  ["influence","影响","/ˈɪnfluəns/","Friends influence each other."],
+  ["instead","代替；反而","/ɪnˈsted/","Drink water instead of soda."],
+  ["interest","兴趣","/ˈɪntrəst/","She has an interest in music."],
+  ["introduce","介绍","/ˌɪntrəˈduːs/","Let me introduce myself."],
+  ["knowledge","知识","/ˈnɑːlɪdʒ/","Knowledge is power."],
+  ["language","语言","/ˈlæŋɡwɪdʒ/","English is a useful language."],
+  ["manage","管理；设法做到","/ˈmænɪdʒ/","I can manage my time."],
+  ["memory","记忆","/ˈmeməri/","Sleep helps memory."],
+  ["method","方法","/ˈmeθəd/","This method works well."],
+  ["mistake","错误","/mɪˈsteɪk/","Learn from each mistake."],
+  ["natural","自然的","/ˈnætʃərəl/","It is a natural result."],
+  ["necessary","必要的","/ˈnesəseri/","Water is necessary for life."],
+  ["notice","注意到；通知","/ˈnoʊtɪs/","Did you notice the change?"],
+  ["opinion","观点","/əˈpɪnjən/","Everyone has an opinion."],
+  ["opportunity","机会","/ˌɑːpərˈtuːnəti/","Do not miss the opportunity."],
+  ["ordinary","普通的","/ˈɔːrdneri/","It was an ordinary day."],
+  ["patient","有耐心的；病人","/ˈpeɪʃənt/","Be patient with yourself."],
+  ["perfect","完美的","/ˈpɜːrfɪkt/","Practice makes perfect."],
+  ["prepare","准备","/prɪˈper/","Prepare for the test."],
+  ["problem","问题","/ˈprɑːbləm/","We can solve the problem."],
+  ["progress","进步","/ˈprɑːɡres/","You made great progress."],
+  ["promise","承诺","/ˈprɑːmɪs/","Keep your promise."],
+  ["protect","保护","/prəˈtekt/","Protect your eyes."],
+  ["purpose","目的","/ˈpɜːrpəs/","What is your purpose?"],
+  ["quality","质量","/ˈkwɑːləti/","Quality is more important than speed."],
+  ["realize","意识到；实现","/ˈriːəlaɪz/","I realize the problem now."],
+  ["receive","收到","/rɪˈsiːv/","I received your message."],
+  ["record","记录","/ˈrekərd/","Keep a record of your study."],
+  ["reduce","减少","/rɪˈduːs/","Reduce screen time at night."],
+  ["remember","记得","/rɪˈmembər/","Remember this word."],
+  ["require","需要","/rɪˈkwaɪər/","This job requires patience."],
+  ["result","结果","/rɪˈzʌlt/","Hard work brings results."],
+  ["review","复习","/rɪˈvjuː/","Review old words often."],
+  ["situation","情况","/ˌsɪtʃuˈeɪʃən/","The situation is getting better."],
+  ["skill","技能","/skɪl/","Writing is a useful skill."],
+  ["solution","解决方案","/səˈluːʃən/","We need a solution."],
+  ["special","特别的","/ˈspeʃəl/","Today is a special day."],
+  ["standard","标准","/ˈstændərd/","This is the standard answer."],
+  ["success","成功","/səkˈses/","Success takes time."],
+  ["support","支持","/səˈpɔːrt/","Thank you for your support."],
+  ["thought","想法","/θɔːt/","That is a good thought."],
+  ["training","训练","/ˈtreɪnɪŋ/","Training makes you stronger."],
+  ["understand","理解","/ˌʌndərˈstænd/","I understand your meaning."],
+  ["useful","有用的","/ˈjuːsfəl/","This app is useful."],
+  ["valuable","有价值的","/ˈvæljuəbəl/","Time is valuable."],
+  ["various","各种各样的","/ˈveriəs/","We tried various ways."],
+  ["vocabulary","词汇","/voʊˈkæbjəleri/","Build your vocabulary every day."],
+  ["wonderful","精彩的","/ˈwʌndərfəl/","It was a wonderful trip."]
+].map(([word, meaning, phonetic, example]) => ({ word, meaning, phonetic, example }));
+
+const $ = (id) => document.getElementById(id);
+const todayKey = () => {
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+};
+const toDate = (key) => {
+  const [y, m, d] = key.split("-").map(Number);
+  return new Date(y, m - 1, d);
+};
+const daysBetween = (a, b) => Math.floor((toDate(b) - toDate(a)) / 86400000);
+const clean = (s) => String(s || "").trim().toLowerCase().replace(/\s+/g, " ");
+
+let state = loadState();
+let focusIndex = 0;
+let practice = { pool: [], wordIndex: 0, round: 1, done: 0 };
+
+function loadState() {
+  const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+  const now = todayKey();
+  return {
+    startDate: saved.startDate || now,
+    done: saved.done || {},
+    mistakes: saved.mistakes || {},
+    customWords: saved.customWords || [],
+    lastStudyDate: saved.lastStudyDate || "",
+    streak: saved.streak || 0
+  };
+}
+function saveState() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+function allWords() {
+  return BUILTIN_WORDS.concat(state.customWords || []);
+}
+function dayNumber() {
+  return Math.max(1, daysBetween(state.startDate, todayKey()) + 1);
+}
+function wordsForToday() {
+  const bank = allWords();
+  const start = ((dayNumber() - 1) * WORDS_PER_DAY) % bank.length;
+  return Array.from({ length: WORDS_PER_DAY }, (_, i) => bank[(start + i) % bank.length]);
+}
+function markStudyDay() {
+  const now = todayKey();
+  if (state.lastStudyDate === now) return;
+  if (!state.lastStudyDate) state.streak = 1;
+  else state.streak = daysBetween(state.lastStudyDate, now) === 1 ? state.streak + 1 : 1;
+  state.lastStudyDate = now;
+  saveState();
+}
+function doneKey(word) {
+  return `${todayKey()}::${word}`;
+}
+function setView(name) {
+  document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
+  document.querySelectorAll(".tab").forEach(t => t.classList.toggle("active", t.dataset.tab === name));
+  $(`view-${name}`).classList.add("active");
+  if (name === "practice") startPractice();
+  if (name === "review") renderMistakes();
+}
+function toast(msg) {
+  $("toast").textContent = msg;
+  $("toast").classList.add("show");
+  clearTimeout(window.__toastTimer);
+  window.__toastTimer = setTimeout(() => $("toast").classList.remove("show"), 1800);
+}
+function render() {
+  const todayWords = wordsForToday();
+  const doneToday = todayWords.filter(w => state.done[doneKey(w.word)]).length;
+  const totalDone = Object.keys(state.done).length;
+  const d = new Date();
+  $("dateText").textContent = `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日 · 打开自动更新`;
+  $("dayNo").textContent = dayNumber();
+  $("todayCount").textContent = `${doneToday}/${WORDS_PER_DAY}`;
+  $("streak").textContent = state.streak;
+  $("totalDone").textContent = totalDone;
+  $("todayBar").style.width = `${doneToday / WORDS_PER_DAY * 100}%`;
+  renderFocus();
+  renderWordList();
+}
+function renderFocus() {
+  const w = wordsForToday()[focusIndex];
+  $("focusWord").textContent = w.word;
+  $("focusPhonetic").textContent = w.phonetic || "";
+  $("focusMeaning").textContent = w.meaning;
+  $("focusExample").textContent = w.example || "";
+  $("knownBtn").textContent = state.done[doneKey(w.word)] ? "已记住" : "记住了";
+}
+function renderWordList() {
+  $("wordList").innerHTML = wordsForToday().map((w, i) => {
+    const done = !!state.done[doneKey(w.word)];
+    return `<button class="card word-row" data-index="${i}">
+      <div><b>${w.word}</b><br><span>${w.meaning}</span></div>
+      <em class="tag ${done ? "done" : ""}">${done ? "已完成" : "待学习"}</em>
+    </button>`;
+  }).join("");
+  document.querySelectorAll("#wordList .card").forEach(btn => {
+    btn.addEventListener("click", () => {
+      focusIndex = Number(btn.dataset.index);
+      renderFocus();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+  });
+}
+function currentPracticeWord() {
+  return practice.pool[practice.wordIndex % practice.pool.length];
+}
+function startPractice() {
+  practice = { pool: wordsForToday(), wordIndex: 0, round: 1, done: 0 };
+  $("feedback").textContent = "";
+  $("feedback").className = "feedback";
+  $("answerInput").value = "";
+  renderPractice();
+}
+function renderPractice() {
+  const w = currentPracticeWord();
+  const showHint = practice.round <= 7;
+  $("roundText").textContent = `第 ${practice.round}/10 遍`;
+  $("practiceHint").textContent = showHint ? w.word : "隐藏单词，凭记忆输入";
+  $("practiceHint").classList.toggle("hidden", !showHint);
+  $("practiceMeaning").textContent = w.meaning;
+  $("practiceExample").textContent = w.example || "";
+  $("practiceBar").style.width = `${practice.done / (WORDS_PER_DAY * 10) * 100}%`;
+  $("answerInput").focus();
+}
+function nextPracticeWord() {
+  practice.done += 1;
+  practice.wordIndex += 1;
+  if (practice.wordIndex >= practice.pool.length) {
+    practice.wordIndex = 0;
+    practice.round += 1;
+  }
+  if (practice.round > 10) {
+    wordsForToday().forEach(w => state.done[doneKey(w.word)] = true);
+    saveState();
+    render();
+    $("feedback").textContent = "今日拼写练习完成。";
+    $("feedback").className = "feedback ok";
+    $("checkBtn").disabled = true;
+    toast("今日 10 个单词已完成");
+    return;
+  }
+  $("answerInput").value = "";
+  renderPractice();
+}
+function checkAnswer() {
+  const w = currentPracticeWord();
+  if (clean($("answerInput").value) === clean(w.word)) {
+    $("feedback").textContent = "正确。";
+    $("feedback").className = "feedback ok";
+    state.done[doneKey(w.word)] = true;
+    delete state.mistakes[w.word];
+    saveState();
+    setTimeout(nextPracticeWord, 260);
+  } else {
+    $("feedback").innerHTML = `不对，正确拼写是 <b>${w.word}</b>。这个词已加入错词复习。`;
+    $("feedback").className = "feedback no";
+    state.mistakes[w.word] = w;
+    saveState();
+  }
+  render();
+}
+function renderMistakes() {
+  const list = Object.values(state.mistakes || {});
+  $("mistakeList").innerHTML = list.length ? list.map(w => `
+    <div class="card">
+      <div class="word-row"><div><b>${w.word}</b><br><span>${w.phonetic || ""}</span></div><em class="tag bad">错词</em></div>
+      <div class="meaning" style="font-size:18px;margin-top:10px;">${w.meaning}</div>
+      <div class="example">${w.example || ""}</div>
+    </div>
+  `).join("") : `<div class="empty">现在没有错词。</div>`;
+}
+function importWords() {
+  const lines = $("importBox").value.split(/\n+/).map(s => s.trim()).filter(Boolean);
+  const parsed = lines.map(line => {
+    const [word, meaning, phonetic = "", example = ""] = line.split("|").map(s => s.trim());
+    return word && meaning ? { word, meaning, phonetic, example } : null;
+  }).filter(Boolean);
+  if (!parsed.length) return toast("没有识别到有效单词");
+  const existing = new Set(allWords().map(w => clean(w.word)));
+  const fresh = parsed.filter(w => !existing.has(clean(w.word)));
+  state.customWords = (state.customWords || []).concat(fresh);
+  $("importBox").value = "";
+  saveState();
+  render();
+  toast(`已加入 ${fresh.length} 个单词`);
+}
+function resetStart() {
+  state.startDate = todayKey();
+  focusIndex = 0;
+  saveState();
+  render();
+  toast("已从今天重新开始");
+}
+function resetAll() {
+  if (!confirm("确定要清空所有学习记录吗？")) return;
+  localStorage.removeItem(STORAGE_KEY);
+  state = loadState();
+  focusIndex = 0;
+  markStudyDay();
+  render();
+  toast("记录已清空");
+}
+
+document.querySelectorAll(".tab").forEach(tab => tab.addEventListener("click", () => setView(tab.dataset.tab)));
+$("prevBtn").addEventListener("click", () => { focusIndex = (focusIndex + WORDS_PER_DAY - 1) % WORDS_PER_DAY; renderFocus(); });
+$("nextBtn").addEventListener("click", () => { focusIndex = (focusIndex + 1) % WORDS_PER_DAY; renderFocus(); });
+$("knownBtn").addEventListener("click", () => {
+  const w = wordsForToday()[focusIndex];
+  state.done[doneKey(w.word)] = true;
+  delete state.mistakes[w.word];
+  saveState();
+  render();
+  toast("已记录");
+});
+$("checkBtn").addEventListener("click", checkAnswer);
+$("skipBtn").addEventListener("click", nextPracticeWord);
+$("answerInput").addEventListener("keydown", e => { if (e.key === "Enter") checkAnswer(); });
+$("clearMistakes").addEventListener("click", () => { state.mistakes = {}; saveState(); renderMistakes(); toast("错词已清空"); });
+$("importBtn").addEventListener("click", importWords);
+$("resetStartBtn").addEventListener("click", resetStart);
+$("resetAllBtn").addEventListener("click", resetAll);
+
+markStudyDay();
+render();
+</script>
+</body>
+</html>
