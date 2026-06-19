@@ -1,0 +1,277 @@
+{
+  "generatedAt": "2026-06-19T03:41:10.755Z",
+  "model": "google/gemini-2.5-flash-image",
+  "startDate": "2026-06-01",
+  "images": {
+    "internet-5066": {
+      "src": "scenes/internet-5066.webp",
+      "word": "internet",
+      "meaning": "互联网",
+      "core": "internet",
+      "model": "google/gemini-2.5-flash-image",
+      "prompt": "Photorealistic vertical 9:16 smartphone background for learning the English vocabulary phrase \"internet\". Meaning in Chinese: 互联网. Example context: The internet is useful.. Scene: a smartphone and laptop on a clean desk, realistic technology learning scene. High-end editorial documentary photography, cinematic natural light, realistic people and objects, shallow depth of field, warm but modern, visually memorable. No visible text, no letters, no captions, no watermark, no UI, no logo.",
+      "generatedAt": "2026-06-19T03:38:05.350Z"
+    },
+    "internet-access-11461": {
+      "src": "scenes/internet-access-11461.webp",
+      "word": "internet access",
+      "meaning": "上网权限",
+      "core": "internet",
+      "model": "google/gemini-2.5-flash-image",
+      "prompt": "Photorealistic vertical 9:16 smartphone background for learning the English vocabulary phrase \"internet access\". Meaning in Chinese: 上网权限. Example context: The hotel has internet access.. Scene: a smartphone and laptop on a clean desk, realistic technology learning scene. High-end editorial documentary photography, cinematic natural light, realistic people and objects, shallow depth of field, warm but modern, visually memorable. No visible text, no letters, no captions, no watermark, no UI, no logo.",
+      "generatedAt": "2026-06-19T03:38:11.584Z"
+    },
+    "internet-connection-19305": {
+      "src": "scenes/internet-connection-19305.webp",
+      "word": "internet connection",
+      "meaning": "网络连接",
+      "core": "internet",
+      "model": "google/gemini-2.5-flash-image",
+      "prompt": "Photorealistic vertical 9:16 smartphone background for learning the English vocabulary phrase \"internet connection\". Meaning in Chinese: 网络连接. Example context: The internet connection is slow.. Scene: a smartphone and laptop on a clean desk, realistic technology learning scene. High-end editorial documentary photography, cinematic natural light, realistic people and objects, shallow depth of field, warm but modern, visually memorable. No visible text, no letters, no captions, no watermark, no UI, no logo.",
+      "generatedAt": "2026-06-19T03:38:17.817Z"
+    },
+    "internet-user-5940": {
+      "src": "scenes/internet-user-5940.webp",
+      "word": "internet user",
+      "meaning": "互联网用户",
+      "core": "internet",
+      "model": "google/gemini-2.5-flash-image",
+      "prompt": "Photorealistic vertical 9:16 smartphone background for learning the English vocabulary phrase \"internet user\". Meaning in Chinese: 互联网用户. Example context: Every internet user needs safety.. Scene: a smartphone and laptop on a clean desk, realistic technology learning scene. High-end editorial documentary photography, cinematic natural light, realistic people and objects, shallow depth of field, warm but modern, visually memorable. No visible text, no letters, no captions, no watermark, no UI, no logo.",
+      "generatedAt": "2026-06-19T03:38:24.215Z"
+    },
+    "internet-cafe-80110": {
+      "src": "scenes/internet-cafe-80110.webp",
+      "word": "internet cafe",
+      "meaning": "网吧",
+      "core": "internet",
+      "model": "google/gemini-2.5-flash-image",
+      "prompt": "Photorealistic vertical 9:16 smartphone background for learning the English vocabulary phrase \"internet cafe\". Meaning in Chinese: 网吧. Example context: He worked in an internet cafe.. Scene: a realistic office workplace with a desk, interview notes, and people collaborating. High-end editorial documentary photography, cinematic natural light, realistic people and objects, shallow depth of field, warm but modern, visually memorable. No visible text, no letters, no captions, no watermark, no UI, no logo.",
+      "generatedAt": "2026-06-19T03:38:30.827Z"
+    },
+    "eye-10402": {
+      "src": "scenes/eye-10402.webp",
+      "word": "eye",
+      "meaning": "眼睛",
+      "core": "eye",
+      "model": "google/gemini-2.5-flash-image",
+      "prompt": "Photorealistic vertical 9:16 smartphone background for learning the English vocabulary phrase \"eye\". Meaning in Chinese: 眼睛. Example context: Protect your eyes.. Scene: a healthy lifestyle scene with morning light, exercise or fresh food, realistic and calm. High-end editorial documentary photography, cinematic natural light, realistic people and objects, shallow depth of field, warm but modern, visually memorable. No visible text, no letters, no captions, no watermark, no UI, no logo.",
+      "generatedAt": "2026-06-19T03:38:36.635Z"
+    },
+    "eyesight-74703": {
+      "src": "scenes/eyesight-74703.webp",
+      "word": "eyesight",
+      "meaning": "视力",
+      "core": "eye",
+      "model": "google/gemini-2.5-flash-image",
+      "prompt": "Photorealistic vertical 9:16 smartphone background for learning the English vocabulary phrase \"eyesight\". Meaning in Chinese: 视力. Example context: Good eyesight helps reading.. Scene: a healthy lifestyle scene with morning light, exercise or fresh food, realistic and calm. High-end editorial documentary photography, cinematic natural light, realistic people and objects, shallow depth of field, warm but modern, visually memorable. No visible text, no letters, no captions, no watermark, no UI, no logo.",
+      "generatedAt": "2026-06-19T03:38:42.879Z"
+    },
+    "eyebrow-83837": {
+      "src": "scenes/eyebrow-83837.webp",
+      "word": "eyebrow",
+      "meaning": "眉毛",
+      "core": "eye",
+      "model": "google/gemini-2.5-flash-image",
+      "prompt": "Photorealistic vertical 9:16 smartphone background for learning the English vocabulary phrase \"eyebrow\". Meaning in Chinese: 眉毛. Example context: She raised one eyebrow.. Scene: a healthy lifestyle scene with morning light, exercise or fresh food, realistic and calm. High-end editorial documentary photography, cinematic natural light, realistic people and objects, shallow depth of field, warm but modern, visually memorable. No visible text, no letters, no captions, no watermark, no UI, no logo.",
+      "generatedAt": "2026-06-19T03:38:49.250Z"
+    },
+    "eye-contact-21634": {
+      "src": "scenes/eye-contact-21634.webp",
+      "word": "eye contact",
+      "meaning": "眼神交流",
+      "core": "eye",
+      "model": "google/gemini-2.5-flash-image",
+      "prompt": "Photorealistic vertical 9:16 smartphone background for learning the English vocabulary phrase \"eye contact\". Meaning in Chinese: 眼神交流. Example context: Eye contact shows attention.. Scene: a healthy lifestyle scene with morning light, exercise or fresh food, realistic and calm. High-end editorial documentary photography, cinematic natural light, realistic people and objects, shallow depth of field, warm but modern, visually memorable. No visible text, no letters, no captions, no watermark, no UI, no logo.",
+      "generatedAt": "2026-06-19T03:38:55.241Z"
+    },
+    "eye-drops-76642": {
+      "src": "scenes/eye-drops-76642.webp",
+      "word": "eye drops",
+      "meaning": "眼药水",
+      "core": "eye",
+      "model": "google/gemini-2.5-flash-image",
+      "prompt": "Photorealistic vertical 9:16 smartphone background for learning the English vocabulary phrase \"eye drops\". Meaning in Chinese: 眼药水. Example context: Use eye drops carefully.. Scene: a warm home care scene with an elderly person receiving kind support from family. High-end editorial documentary photography, cinematic natural light, realistic people and objects, shallow depth of field, warm but modern, visually memorable. No visible text, no letters, no captions, no watermark, no UI, no logo.",
+      "generatedAt": "2026-06-19T03:39:01.694Z"
+    },
+    "student-92626": {
+      "src": "scenes/student-92626.webp",
+      "word": "student",
+      "meaning": "学生",
+      "core": "student",
+      "model": "google/gemini-2.5-flash-image",
+      "prompt": "Photorealistic vertical 9:16 smartphone background for learning the English vocabulary phrase \"student\". Meaning in Chinese: 学生. Example context: The student asked a question.. Scene: a university student at a desk with books, campus light, and study materials. High-end editorial documentary photography, cinematic natural light, realistic people and objects, shallow depth of field, warm but modern, visually memorable. No visible text, no letters, no captions, no watermark, no UI, no logo.",
+      "generatedAt": "2026-06-19T03:39:08.973Z"
+    },
+    "student-card-59063": {
+      "src": "scenes/student-card-59063.webp",
+      "word": "student card",
+      "meaning": "学生证",
+      "core": "student",
+      "model": "google/gemini-2.5-flash-image",
+      "prompt": "Photorealistic vertical 9:16 smartphone background for learning the English vocabulary phrase \"student card\". Meaning in Chinese: 学生证. Example context: Show your student card.. Scene: a university student at a desk with books, campus light, and study materials. High-end editorial documentary photography, cinematic natural light, realistic people and objects, shallow depth of field, warm but modern, visually memorable. No visible text, no letters, no captions, no watermark, no UI, no logo.",
+      "generatedAt": "2026-06-19T03:39:14.944Z"
+    },
+    "student-id-58477": {
+      "src": "scenes/student-id-58477.webp",
+      "word": "student ID",
+      "meaning": "学生编号；学生证",
+      "core": "student",
+      "model": "google/gemini-2.5-flash-image",
+      "prompt": "Photorealistic vertical 9:16 smartphone background for learning the English vocabulary phrase \"student ID\". Meaning in Chinese: 学生编号；学生证. Example context: I lost my student ID.. Scene: a university student at a desk with books, campus light, and study materials. High-end editorial documentary photography, cinematic natural light, realistic people and objects, shallow depth of field, warm but modern, visually memorable. No visible text, no letters, no captions, no watermark, no UI, no logo.",
+      "generatedAt": "2026-06-19T03:39:20.967Z"
+    },
+    "student-life-41690": {
+      "src": "scenes/student-life-41690.webp",
+      "word": "student life",
+      "meaning": "学生生活",
+      "core": "student",
+      "model": "google/gemini-2.5-flash-image",
+      "prompt": "Photorealistic vertical 9:16 smartphone background for learning the English vocabulary phrase \"student life\". Meaning in Chinese: 学生生活. Example context: Student life can be busy.. Scene: a university student at a desk with books, campus light, and study materials. High-end editorial documentary photography, cinematic natural light, realistic people and objects, shallow depth of field, warm but modern, visually memorable. No visible text, no letters, no captions, no watermark, no UI, no logo.",
+      "generatedAt": "2026-06-19T03:39:27.817Z"
+    },
+    "exchange-student-22137": {
+      "src": "scenes/exchange-student-22137.webp",
+      "word": "exchange student",
+      "meaning": "交换生",
+      "core": "student",
+      "model": "google/gemini-2.5-flash-image",
+      "prompt": "Photorealistic vertical 9:16 smartphone background for learning the English vocabulary phrase \"exchange student\". Meaning in Chinese: 交换生. Example context: She is an exchange student.. Scene: an international exchange student walking through a modern university campus with classmates. High-end editorial documentary photography, cinematic natural light, realistic people and objects, shallow depth of field, warm but modern, visually memorable. No visible text, no letters, no captions, no watermark, no UI, no logo.",
+      "generatedAt": "2026-06-19T03:39:34.420Z"
+    },
+    "computer-87431": {
+      "src": "scenes/computer-87431.webp",
+      "word": "computer",
+      "meaning": "电脑",
+      "core": "computer",
+      "model": "google/gemini-2.5-flash-image",
+      "prompt": "Photorealistic vertical 9:16 smartphone background for learning the English vocabulary phrase \"computer\". Meaning in Chinese: 电脑. Example context: Use the computer to study.. Scene: a realistic computer lab where a student studies on a laptop with code softly visible as abstract light. High-end editorial documentary photography, cinematic natural light, realistic people and objects, shallow depth of field, warm but modern, visually memorable. No visible text, no letters, no captions, no watermark, no UI, no logo.",
+      "generatedAt": "2026-06-19T03:39:40.442Z"
+    },
+    "computer-game-82672": {
+      "src": "scenes/computer-game-82672.webp",
+      "word": "computer game",
+      "meaning": "电脑游戏",
+      "core": "computer",
+      "model": "google/gemini-2.5-flash-image",
+      "prompt": "Photorealistic vertical 9:16 smartphone background for learning the English vocabulary phrase \"computer game\". Meaning in Chinese: 电脑游戏. Example context: He plays a computer game.. Scene: a realistic computer lab where a student studies on a laptop with code softly visible as abstract light. High-end editorial documentary photography, cinematic natural light, realistic people and objects, shallow depth of field, warm but modern, visually memorable. No visible text, no letters, no captions, no watermark, no UI, no logo.",
+      "generatedAt": "2026-06-19T03:39:47.494Z"
+    },
+    "computer-screen-23013": {
+      "src": "scenes/computer-screen-23013.webp",
+      "word": "computer screen",
+      "meaning": "电脑屏幕",
+      "core": "computer",
+      "model": "google/gemini-2.5-flash-image",
+      "prompt": "Photorealistic vertical 9:16 smartphone background for learning the English vocabulary phrase \"computer screen\". Meaning in Chinese: 电脑屏幕. Example context: Clean the computer screen.. Scene: a realistic computer lab where a student studies on a laptop with code softly visible as abstract light. High-end editorial documentary photography, cinematic natural light, realistic people and objects, shallow depth of field, warm but modern, visually memorable. No visible text, no letters, no captions, no watermark, no UI, no logo.",
+      "generatedAt": "2026-06-19T03:39:54.043Z"
+    },
+    "computer-science-24946": {
+      "src": "scenes/computer-science-24946.webp",
+      "word": "computer science",
+      "meaning": "计算机科学",
+      "core": "computer",
+      "model": "google/gemini-2.5-flash-image",
+      "prompt": "Photorealistic vertical 9:16 smartphone background for learning the English vocabulary phrase \"computer science\". Meaning in Chinese: 计算机科学. Example context: She studies computer science.. Scene: a realistic computer lab where a student studies on a laptop with code softly visible as abstract light. High-end editorial documentary photography, cinematic natural light, realistic people and objects, shallow depth of field, warm but modern, visually memorable. No visible text, no letters, no captions, no watermark, no UI, no logo.",
+      "generatedAt": "2026-06-19T03:39:59.685Z"
+    },
+    "computer-room-96148": {
+      "src": "scenes/computer-room-96148.webp",
+      "word": "computer room",
+      "meaning": "电脑室",
+      "core": "computer",
+      "model": "google/gemini-2.5-flash-image",
+      "prompt": "Photorealistic vertical 9:16 smartphone background for learning the English vocabulary phrase \"computer room\". Meaning in Chinese: 电脑室. Example context: The computer room is open.. Scene: a realistic computer lab where a student studies on a laptop with code softly visible as abstract light. High-end editorial documentary photography, cinematic natural light, realistic people and objects, shallow depth of field, warm but modern, visually memorable. No visible text, no letters, no captions, no watermark, no UI, no logo.",
+      "generatedAt": "2026-06-19T03:40:06.208Z"
+    },
+    "teacher-21049": {
+      "src": "scenes/teacher-21049.webp",
+      "word": "teacher",
+      "meaning": "老师",
+      "core": "teacher",
+      "model": "google/gemini-2.5-flash-image",
+      "prompt": "Photorealistic vertical 9:16 smartphone background for learning the English vocabulary phrase \"teacher\". Meaning in Chinese: 老师. Example context: The teacher is kind.. Scene: a quiet classroom or study desk with notebooks, books, and soft morning light. High-end editorial documentary photography, cinematic natural light, realistic people and objects, shallow depth of field, warm but modern, visually memorable. No visible text, no letters, no captions, no watermark, no UI, no logo.",
+      "generatedAt": "2026-06-19T03:40:12.419Z"
+    },
+    "headteacher-58914": {
+      "src": "scenes/headteacher-58914.webp",
+      "word": "headteacher",
+      "meaning": "校长；班主任",
+      "core": "teacher",
+      "model": "google/gemini-2.5-flash-image",
+      "prompt": "Photorealistic vertical 9:16 smartphone background for learning the English vocabulary phrase \"headteacher\". Meaning in Chinese: 校长；班主任. Example context: The headteacher talked to us.. Scene: a quiet classroom or study desk with notebooks, books, and soft morning light. High-end editorial documentary photography, cinematic natural light, realistic people and objects, shallow depth of field, warm but modern, visually memorable. No visible text, no letters, no captions, no watermark, no UI, no logo.",
+      "generatedAt": "2026-06-19T03:40:18.736Z"
+    },
+    "teacher-training-1425": {
+      "src": "scenes/teacher-training-1425.webp",
+      "word": "teacher training",
+      "meaning": "教师培训",
+      "core": "teacher",
+      "model": "google/gemini-2.5-flash-image",
+      "prompt": "Photorealistic vertical 9:16 smartphone background for learning the English vocabulary phrase \"teacher training\". Meaning in Chinese: 教师培训. Example context: Teacher training starts Monday.. Scene: a quiet classroom or study desk with notebooks, books, and soft morning light. High-end editorial documentary photography, cinematic natural light, realistic people and objects, shallow depth of field, warm but modern, visually memorable. No visible text, no letters, no captions, no watermark, no UI, no logo.",
+      "generatedAt": "2026-06-19T03:40:25.356Z"
+    },
+    "student-teacher-54240": {
+      "src": "scenes/student-teacher-54240.webp",
+      "word": "student teacher",
+      "meaning": "实习老师",
+      "core": "teacher",
+      "model": "google/gemini-2.5-flash-image",
+      "prompt": "Photorealistic vertical 9:16 smartphone background for learning the English vocabulary phrase \"student teacher\". Meaning in Chinese: 实习老师. Example context: A student teacher joined the class.. Scene: a university student at a desk with books, campus light, and study materials. High-end editorial documentary photography, cinematic natural light, realistic people and objects, shallow depth of field, warm but modern, visually memorable. No visible text, no letters, no captions, no watermark, no UI, no logo.",
+      "generatedAt": "2026-06-19T03:40:31.686Z"
+    },
+    "teacher-desk-27928": {
+      "src": "scenes/teacher-desk-27928.webp",
+      "word": "teacher desk",
+      "meaning": "教师讲桌",
+      "core": "teacher",
+      "model": "google/gemini-2.5-flash-image",
+      "prompt": "Photorealistic vertical 9:16 smartphone background for learning the English vocabulary phrase \"teacher desk\". Meaning in Chinese: 教师讲桌. Example context: The book is on the teacher desk.. Scene: a quiet classroom or study desk with notebooks, books, and soft morning light. High-end editorial documentary photography, cinematic natural light, realistic people and objects, shallow depth of field, warm but modern, visually memorable. No visible text, no letters, no captions, no watermark, no UI, no logo.",
+      "generatedAt": "2026-06-19T03:40:37.892Z"
+    },
+    "parent-43400": {
+      "src": "scenes/parent-43400.webp",
+      "word": "parent",
+      "meaning": "父母之一",
+      "core": "parent",
+      "model": "google/gemini-2.5-flash-image",
+      "prompt": "Photorealistic vertical 9:16 smartphone background for learning the English vocabulary phrase \"parent\". Meaning in Chinese: 父母之一. Example context: A parent came to school.. Scene: a quiet classroom or study desk with notebooks, books, and soft morning light. High-end editorial documentary photography, cinematic natural light, realistic people and objects, shallow depth of field, warm but modern, visually memorable. No visible text, no letters, no captions, no watermark, no UI, no logo.",
+      "generatedAt": "2026-06-19T03:40:43.648Z"
+    },
+    "parenting-31209": {
+      "src": "scenes/parenting-31209.webp",
+      "word": "parenting",
+      "meaning": "育儿",
+      "core": "parent",
+      "model": "google/gemini-2.5-flash-image",
+      "prompt": "Photorealistic vertical 9:16 smartphone background for learning the English vocabulary phrase \"parenting\". Meaning in Chinese: 育儿. Example context: Parenting is not easy.. Scene: a warm home interior with family life, soft light, and a cozy room. High-end editorial documentary photography, cinematic natural light, realistic people and objects, shallow depth of field, warm but modern, visually memorable. No visible text, no letters, no captions, no watermark, no UI, no logo.",
+      "generatedAt": "2026-06-19T03:40:50.468Z"
+    },
+    "grandparent-10244": {
+      "src": "scenes/grandparent-10244.webp",
+      "word": "grandparent",
+      "meaning": "祖父母之一",
+      "core": "parent",
+      "model": "google/gemini-2.5-flash-image",
+      "prompt": "Photorealistic vertical 9:16 smartphone background for learning the English vocabulary phrase \"grandparent\". Meaning in Chinese: 祖父母之一. Example context: My grandparent tells stories.. Scene: a warm home care scene with an elderly person receiving kind support from family. High-end editorial documentary photography, cinematic natural light, realistic people and objects, shallow depth of field, warm but modern, visually memorable. No visible text, no letters, no captions, no watermark, no UI, no logo.",
+      "generatedAt": "2026-06-19T03:40:57.075Z"
+    },
+    "single-parent-8376": {
+      "src": "scenes/single-parent-8376.webp",
+      "word": "single parent",
+      "meaning": "单亲家长",
+      "core": "parent",
+      "model": "google/gemini-2.5-flash-image",
+      "prompt": "Photorealistic vertical 9:16 smartphone background for learning the English vocabulary phrase \"single parent\". Meaning in Chinese: 单亲家长. Example context: She is a single parent.. Scene: a warm home interior with family life, soft light, and a cozy room. High-end editorial documentary photography, cinematic natural light, realistic people and objects, shallow depth of field, warm but modern, visually memorable. No visible text, no letters, no captions, no watermark, no UI, no logo.",
+      "generatedAt": "2026-06-19T03:41:03.849Z"
+    },
+    "parent-meeting-59920": {
+      "src": "scenes/parent-meeting-59920.webp",
+      "word": "parent meeting",
+      "meaning": "家长会",
+      "core": "parent",
+      "model": "google/gemini-2.5-flash-image",
+      "prompt": "Photorealistic vertical 9:16 smartphone background for learning the English vocabulary phrase \"parent meeting\". Meaning in Chinese: 家长会. Example context: The parent meeting is tonight.. Scene: a warm home interior with family life, soft light, and a cozy room. High-end editorial documentary photography, cinematic natural light, realistic people and objects, shallow depth of field, warm but modern, visually memorable. No visible text, no letters, no captions, no watermark, no UI, no logo.",
+      "generatedAt": "2026-06-19T03:41:10.755Z"
+    }
+  }
+}
