@@ -639,6 +639,11 @@ textarea {
       <button class="btn ghost" id="clearMistakes" style="min-height:36px; flex:0 0 auto;">清空</button>
     </div>
     <div class="list" id="mistakeList"></div>
+    <div class="section-head" style="margin-top:18px;">
+      <h2>已学单词</h2>
+      <span class="small" id="learnedCount">0 个</span>
+    </div>
+    <div class="list" id="learnedList"></div>
   </section>
 
   <section id="view-settings" class="view">
@@ -1124,7 +1129,10 @@ function loadState() {
     mistakes: saved.mistakes || {},
     customWords: saved.customWords || [],
     lastStudyDate: saved.lastStudyDate || "",
-    streak: saved.streak || 0
+    streak: saved.streak || 0,
+    learnedWords: saved.learnedWords || {},
+    practiceSession: saved.practiceSession || null,
+    currentView: saved.currentView || "learn"
   };
 }
 function saveState() {
@@ -1257,6 +1265,84 @@ function wordsForToday() {
   const base = baseWordsForToday();
   return base.concat(reviewWordsForToday(base));
 }
+function compactWord(word) {
+  return {
+    word: word.word,
+    meaning: word.meaning,
+    phonetic: word.phonetic || "",
+    example: word.example || "",
+    core: word.core || "自定义"
+  };
+}
+function wordCatalog() {
+  return allGroups().flatMap(group => groupWords(group));
+}
+function rememberWords(words) {
+  const next = { ...(state.learnedWords || {}) };
+  let changed = false;
+  words.forEach(word => {
+    const key = clean(word.word);
+    const previous = next[key];
+    const seenToday = previous && previous.lastSeen === todayKey();
+    const record = {
+      ...(previous || {}),
+      ...compactWord(word),
+      firstSeen: previous ? previous.firstSeen : todayKey(),
+      lastSeen: todayKey(),
+      seenCount: previous ? previous.seenCount + (seenToday ? 0 : 1) : 1
+    };
+    if (!previous || previous.lastSeen !== record.lastSeen || previous.meaning !== record.meaning || previous.example !== record.example) {
+      next[key] = record;
+      changed = true;
+    }
+  });
+  if (changed) {
+    state.learnedWords = next;
+    saveState();
+  }
+}
+function learnedWordsList() {
+  const catalog = new Map(wordCatalog().map(word => [clean(word.word), compactWord(word)]));
+  const learned = { ...(state.learnedWords || {}) };
+  Object.keys(state.done || {}).forEach(key => {
+    const wordText = key.split("::").slice(1).join("::");
+    const normalized = clean(wordText);
+    if (!learned[normalized]) learned[normalized] = { ...(catalog.get(normalized) || { word: wordText, meaning: "", phonetic: "", example: "", core: "自定义" }), firstSeen: "", lastSeen: "", seenCount: 1 };
+  });
+  Object.values(state.mistakes || {}).forEach(word => {
+    const normalized = clean(word.word);
+    if (!learned[normalized]) learned[normalized] = { ...compactWord(word), firstSeen: "", lastSeen: todayKey(), seenCount: 1 };
+  });
+  return Object.values(learned).sort((a, b) => String(b.lastSeen || "").localeCompare(String(a.lastSeen || "")) || clean(a.word).localeCompare(clean(b.word)));
+}
+function practiceSessionKey() {
+  return `${todayKey()}::${dayNumber()}`;
+}
+function savePracticeSession() {
+  if (!practice.pool.length) return;
+  state.practiceSession = {
+    key: practiceSessionKey(),
+    pool: practice.pool.map(compactWord),
+    wordIndex: practice.wordIndex,
+    round: practice.round,
+    done: practice.done
+  };
+  saveState();
+}
+function restorePracticeSession() {
+  const session = state.practiceSession;
+  if (!session || session.key !== practiceSessionKey() || !Array.isArray(session.pool) || !session.pool.length) return null;
+  return {
+    pool: session.pool.map(word => normalizeWord(word, word.core || "自定义")),
+    wordIndex: Math.min(Math.max(0, Number(session.wordIndex) || 0), session.pool.length - 1),
+    round: Math.min(Math.max(1, Number(session.round) || 1), 10),
+    done: Math.max(0, Number(session.done) || 0)
+  };
+}
+function clearPracticeSession() {
+  state.practiceSession = null;
+  saveState();
+}
 function markStudyDay() {
   const now = todayKey();
   if (state.lastStudyDate === now) return;
@@ -1273,6 +1359,8 @@ function setView(name) {
   document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
   document.querySelectorAll(".tab").forEach(t => t.classList.toggle("active", t.dataset.tab === name));
   $(`view-${name}`).classList.add("active");
+  state.currentView = name;
+  saveState();
   if (name === "practice") startPractice();
   if (name === "review") renderMistakes();
 }
@@ -1420,6 +1508,7 @@ function speakTodayWords() {
 }
 function render() {
   const todayWords = wordsForToday();
+  rememberWords(todayWords);
   if (focusIndex >= todayWords.length) focusIndex = 0;
   const doneToday = todayWords.filter(w => state.done[doneKey(w.word)]).length;
   const totalDone = Object.keys(state.done).length;
@@ -1530,7 +1619,10 @@ function currentPracticeWord() {
   return practice.pool[practice.wordIndex % practice.pool.length];
 }
 function startPractice() {
-  practice = { pool: wordsForToday(), wordIndex: 0, round: 1, done: 0 };
+  const restored = restorePracticeSession();
+  practice = restored || { pool: wordsForToday(), wordIndex: 0, round: 1, done: 0 };
+  rememberWords(practice.pool);
+  savePracticeSession();
   feedback("", "");
   clearAnswerMood();
   $("answerInput").value = "";
@@ -1562,6 +1654,8 @@ function nextPracticeWord() {
   }
   if (practice.round > 10) {
     practice.pool.forEach(w => state.done[doneKey(w.word)] = true);
+    rememberWords(practice.pool);
+    clearPracticeSession();
     saveState();
     render();
     feedback("ok", "今日拼写练习完成。");
@@ -1572,10 +1666,12 @@ function nextPracticeWord() {
     return;
   }
   $("answerInput").value = "";
+  savePracticeSession();
   renderPractice();
 }
 function checkAnswer() {
   const w = currentPracticeWord();
+  rememberWords([w]);
   if (clean($("answerInput").value) === clean(w.word)) {
     setAnswerMood("ok");
     feedback("ok", `答对了。<b>${escapeHtml(w.word)}</b> 已点亮。`);
@@ -1617,6 +1713,28 @@ function renderMistakes() {
   document.querySelectorAll("#mistakeList .mini-speak").forEach(btn => {
     btn.addEventListener("click", () => speakWord(list[Number(btn.dataset.mistakeIndex)].word));
   });
+  renderLearnedWords();
+}
+function renderLearnedWords() {
+  const list = learnedWordsList();
+  $("learnedCount").textContent = `${list.length} 个`;
+  $("learnedList").innerHTML = list.length ? list.slice(0, 120).map((w, i) => `
+    <div class="card">
+      <div class="word-row">
+        <div><b>${escapeHtml(w.word)}</b><br><span>${escapeHtml(w.meaning || "")}</span>${usageHtml(w, true)}</div>
+        <div class="word-actions">
+          <button class="mini-speak" data-learned-index="${i}" aria-label="朗读 ${escapeHtml(w.word)}">
+            <svg viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4V5Z"></path><path d="M15 9.5a4 4 0 0 1 0 5"></path></svg>
+          </button>
+          <em class="tag done">已学</em>
+        </div>
+      </div>
+      <div class="example" style="margin-top:10px;">${escapeHtml(w.example || "")}</div>
+    </div>
+  `).join("") : `<div class="empty">学过的单词会出现在这里。</div>`;
+  document.querySelectorAll("#learnedList .mini-speak").forEach(btn => {
+    btn.addEventListener("click", () => speakWord(list[Number(btn.dataset.learnedIndex)].word));
+  });
 }
 function importWords() {
   const lines = $("importBox").value.split(/\n+/).map(s => s.trim()).filter(Boolean);
@@ -1635,6 +1753,7 @@ function importWords() {
 }
 function resetStart() {
   state.startDate = todayKey();
+  state.practiceSession = null;
   focusIndex = 0;
   saveState();
   render();
@@ -1645,6 +1764,7 @@ function setLearningDay() {
   if (!Number.isFinite(value) || value < 1) return toast("请输入大于 0 的天数");
   const nextDay = Math.floor(value);
   state.startDate = startDateForLearningDay(nextDay);
+  state.practiceSession = null;
   focusIndex = 0;
   saveState();
   render();
@@ -1714,6 +1834,7 @@ $("resetAllBtn").addEventListener("click", resetAll);
 setupSceneCanvas();
 markStudyDay();
 render();
+setView(state.currentView || "learn");
 loadSceneManifest();
 </script>
 </body>
