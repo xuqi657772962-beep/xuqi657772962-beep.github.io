@@ -11,11 +11,14 @@ const MANIFEST_FILE = path.join(SCENES_DIR, "manifest.json");
 const WORDS_PER_DAY = 10;
 const GROUP_SIZE = 5;
 const GROUPS_PER_DAY = Math.max(1, Math.floor(WORDS_PER_DAY / GROUP_SIZE));
-const MODEL = process.env.OPENROUTER_IMAGE_MODEL || "google/gemini-2.5-flash-image";
 const START_DATE = process.env.WORDMASTER_SCENE_START_DATE || "2026-06-01";
-const DAYS_AHEAD = Number(process.env.WORDMASTER_SCENE_DAYS_AHEAD || 2);
-const MAX_GENERATIONS = Number(process.env.WORDMASTER_SCENE_MAX_GENERATIONS || 30);
-const API_TOKEN = process.env.OPENROUTER_API_KEY || "";
+const DAYS_AHEAD = Number(process.env.WORDMASTER_SCENE_DAYS_AHEAD || 1);
+const MAX_GENERATIONS = Number(process.env.WORDMASTER_SCENE_MAX_GENERATIONS || 20);
+const PEXELS_API_KEY = process.env.PEXELS_API_KEY || "";
+const PIXABAY_API_KEY = process.env.PIXABAY_API_KEY || "";
+const ENABLE_OPENROUTER = process.env.ENABLE_OPENROUTER_IMAGE_GENERATION === "true";
+const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY || "";
+const OPENROUTER_MODEL = process.env.OPENROUTER_IMAGE_MODEL || "google/gemini-2.5-flash-image";
 const IMAGE_SIZE = process.env.WORDMASTER_SCENE_IMAGE_SIZE || "1K";
 
 function todayKey() {
@@ -98,33 +101,165 @@ function scenePrompt(word) {
   ].filter(Boolean).join(" ");
 }
 
+function sceneSearchTerms(word) {
+  const text = clean(`${word.word} ${word.meaning} ${word.example || ""} ${word.core || ""}`);
+  const terms = [word.word];
+  if (/exchange student/.test(text)) terms.push("international student", "university campus", "classroom");
+  else if (/computer science|computer room|computer screen|computer game|computer/.test(text)) terms.push("computer lab", "student laptop", "technology");
+  else if (/student card|student id|student life|student/.test(text)) terms.push("student", "campus", "study desk");
+  else if (/old people|grandparent|healthcare|care/.test(text)) terms.push("elderly care", "family home", "warm light");
+  else if (/young people|people person|people skills|people/.test(text)) terms.push("people talking", "friends cafe", "conversation");
+  else if (/teacher|school|classroom|homework|textbook|notebook|book|word|language/.test(text)) terms.push("classroom", "study desk", "notebook");
+  else if (/job interview|job offer|part-time job|full-time job|work|teamwork|office|worker/.test(text)) terms.push("office workplace", "meeting", "desk");
+  else if (/phone|smartphone|internet|screen|username|password|filename|homepage/.test(text)) terms.push("smartphone desk", "laptop", "technology");
+  else if (/home|house|room|family|parent|child|bedtime|story/.test(text)) terms.push("home interior", "family", "warm room");
+  else if (/city|road|car|country|world|travel/.test(text)) terms.push("city street", "travel", "road");
+  else if (/water|waterfall|water bottle|watercolor/.test(text)) terms.push("water", "nature", "outdoor");
+  else if (/music|headphone|movie|game|video/.test(text)) terms.push("headphones", "media", "screen glow");
+  else if (/health|body|food|eye|head|life/.test(text)) terms.push("healthy lifestyle", "morning", "real life");
+  else terms.push("real life", "documentary photography", "natural light");
+  return [...new Set(terms.filter(Boolean))];
+}
+
+function sceneSearchQuery(word) {
+  return sceneSearchTerms(word).slice(0, 4).join(" ");
+}
+
 async function readManifest() {
   if (!existsSync(MANIFEST_FILE)) {
-    return { generatedAt: "", model: MODEL, startDate: START_DATE, images: {} };
+    return { generatedAt: "", strategy: "free-stock-then-free-ai", startDate: START_DATE, images: {} };
   }
   return JSON.parse(await readFile(MANIFEST_FILE, "utf8"));
+}
+
+function extensionForMime(mimeType) {
+  if (/webp/i.test(mimeType)) return "webp";
+  if (/png/i.test(mimeType)) return "png";
+  return "jpg";
 }
 
 function imageBufferFromDataUrl(dataUrl) {
   const match = String(dataUrl).match(/^data:([^;]+);base64,(.+)$/);
   if (!match) return null;
+  const mimeType = match[1];
   return {
-    mimeType: match[1],
-    bytes: Buffer.from(match[2], "base64")
+    bytes: Buffer.from(match[2], "base64"),
+    extension: extensionForMime(mimeType),
+    mimeType
   };
 }
 
-async function createImage(prompt, seed) {
+async function downloadImage(url) {
+  const data = imageBufferFromDataUrl(url);
+  if (data) return data;
+  const response = await fetch(url, {
+    headers: {
+      "User-Agent": "Wordmaster Scene Generator"
+    }
+  });
+  if (!response.ok) throw new Error(`Image download failed: ${response.status}`);
+  const mimeType = response.headers.get("content-type") || "image/jpeg";
+  return {
+    bytes: Buffer.from(await response.arrayBuffer()),
+    extension: extensionForMime(mimeType),
+    mimeType
+  };
+}
+
+function pickBySeed(items, seed) {
+  if (!items.length) return null;
+  return items[Math.abs(seed) % items.length];
+}
+
+async function getPexelsImage(word, seed) {
+  if (!PEXELS_API_KEY) return null;
+  const query = sceneSearchQuery(word);
+  const url = new URL("https://api.pexels.com/v1/search");
+  url.searchParams.set("query", query);
+  url.searchParams.set("orientation", "portrait");
+  url.searchParams.set("size", "large");
+  url.searchParams.set("per_page", "12");
+  const response = await fetch(url, { headers: { Authorization: PEXELS_API_KEY } });
+  if (!response.ok) {
+    console.log(`Pexels skipped ${word.word}: ${response.status}`);
+    return null;
+  }
+  const data = await response.json();
+  const photo = pickBySeed(data.photos || [], seed);
+  if (!photo) return null;
+  const imageUrl = photo.src?.large2x || photo.src?.portrait || photo.src?.large || photo.src?.original;
+  if (!imageUrl) return null;
+  const image = await downloadImage(imageUrl);
+  return {
+    ...image,
+    provider: "pexels",
+    sourceUrl: photo.url,
+    attribution: photo.photographer ? `Photo by ${photo.photographer} on Pexels` : "Photo from Pexels",
+    query
+  };
+}
+
+async function getPixabayImage(word, seed) {
+  if (!PIXABAY_API_KEY) return null;
+  const query = sceneSearchQuery(word);
+  const url = new URL("https://pixabay.com/api/");
+  url.searchParams.set("key", PIXABAY_API_KEY);
+  url.searchParams.set("q", query);
+  url.searchParams.set("image_type", "photo");
+  url.searchParams.set("orientation", "vertical");
+  url.searchParams.set("safesearch", "true");
+  url.searchParams.set("per_page", "12");
+  const response = await fetch(url);
+  if (!response.ok) {
+    console.log(`Pixabay skipped ${word.word}: ${response.status}`);
+    return null;
+  }
+  const data = await response.json();
+  const photo = pickBySeed(data.hits || [], seed);
+  if (!photo) return null;
+  const imageUrl = photo.largeImageURL || photo.webformatURL;
+  if (!imageUrl) return null;
+  const image = await downloadImage(imageUrl);
+  return {
+    ...image,
+    provider: "pixabay",
+    sourceUrl: photo.pageURL,
+    attribution: photo.user ? `Photo by ${photo.user} on Pixabay` : "Photo from Pixabay",
+    query
+  };
+}
+
+async function getPollinationsImage(word, seed) {
+  const prompt = scenePrompt(word);
+  const url = new URL(`https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}`);
+  url.searchParams.set("width", "768");
+  url.searchParams.set("height", "1344");
+  url.searchParams.set("seed", String(seed));
+  url.searchParams.set("nologo", "true");
+  url.searchParams.set("safe", "true");
+  const image = await downloadImage(url.toString());
+  return {
+    ...image,
+    provider: "pollinations",
+    sourceUrl: "https://pollinations.ai/",
+    attribution: "Generated with Pollinations",
+    prompt
+  };
+}
+
+async function getOpenRouterImage(word, seed) {
+  if (!ENABLE_OPENROUTER || !OPENROUTER_API_KEY) return null;
+  const prompt = scenePrompt(word);
   const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${API_TOKEN}`,
+      Authorization: `Bearer ${OPENROUTER_API_KEY}`,
       "Content-Type": "application/json",
       "HTTP-Referer": "https://xuqi657772962-beep.github.io/wordmaster/",
       "X-Title": "Wordmaster Daily Scenes"
     },
     body: JSON.stringify({
-      model: MODEL,
+      model: OPENROUTER_MODEL,
       messages: [
         {
           role: "user",
@@ -147,32 +282,42 @@ async function createImage(prompt, seed) {
   const image = message?.images?.[0];
   const url = image?.image_url?.url || image?.imageUrl?.url || image?.url;
   if (!url) throw new Error(`OpenRouter returned no image output: ${JSON.stringify(result).slice(0, 500)}`);
-  return url;
+  const downloaded = await downloadImage(url);
+  return {
+    ...downloaded,
+    provider: "openrouter",
+    sourceUrl: "https://openrouter.ai/",
+    attribution: `Generated with ${OPENROUTER_MODEL}`,
+    prompt
+  };
 }
 
-async function downloadImage(url, target) {
-  const data = imageBufferFromDataUrl(url);
-  if (data) {
-    await writeFile(target, data.bytes);
-    return;
+async function getSceneImage(word, seed) {
+  const providers = [
+    () => getPexelsImage(word, seed),
+    () => getPixabayImage(word, seed),
+    () => getPollinationsImage(word, seed),
+    () => getOpenRouterImage(word, seed)
+  ];
+  for (const provider of providers) {
+    try {
+      const image = await provider();
+      if (image) return image;
+    } catch (error) {
+      console.log(`Provider skipped ${word.word}: ${error.message}`);
+    }
   }
-  const response = await fetch(url);
-  if (!response.ok) throw new Error(`Image download failed: ${response.status}`);
-  const bytes = Buffer.from(await response.arrayBuffer());
-  await writeFile(target, bytes);
+  return null;
 }
 
 async function main() {
-  if (!API_TOKEN) {
-    console.log("OPENROUTER_API_KEY is not configured. Skipping scene generation.");
-    return;
-  }
-
   await mkdir(SCENES_DIR, { recursive: true });
   const html = await readFile(INDEX_FILE, "utf8");
   const groups = extractGroups(html);
   const manifest = await readManifest();
-  manifest.model = MODEL;
+  manifest.strategy = ENABLE_OPENROUTER
+    ? "pexels-pixabay-pollinations-openrouter"
+    : "pexels-pixabay-pollinations";
   manifest.startDate = START_DATE;
 
   const baseDay = Math.max(1, daysBetween(START_DATE, todayKey()) + 1);
@@ -193,22 +338,27 @@ async function main() {
   let generated = 0;
   for (const word of candidates) {
     const key = sceneAssetKey(word);
-    const filename = `${key}.webp`;
-    const target = path.join(SCENES_DIR, filename);
-    if (manifest.images[key]?.src && existsSync(target)) continue;
     if (generated >= MAX_GENERATIONS) break;
+    const currentSrc = manifest.images[key]?.src;
+    if (currentSrc && existsSync(path.join(WORDMASTER_DIR, currentSrc))) continue;
 
-    const prompt = scenePrompt(word);
-    console.log(`Generating ${word.word} -> ${filename}`);
-    const outputUrl = await createImage(prompt, hashScene(`${word.word}-${word.meaning}`));
-    await downloadImage(outputUrl, target);
+    const seed = hashScene(`${word.word}-${word.meaning}`);
+    console.log(`Creating scene for ${word.word}`);
+    const scene = await getSceneImage(word, seed);
+    if (!scene) throw new Error(`No scene image returned for ${word.word}`);
+    const filename = `${key}.${scene.extension || "jpg"}`;
+    const target = path.join(SCENES_DIR, filename);
+    await writeFile(target, scene.bytes);
     manifest.images[key] = {
       src: `scenes/${filename}`,
       word: word.word,
       meaning: word.meaning,
       core: word.core,
-      model: MODEL,
-      prompt,
+      provider: scene.provider,
+      sourceUrl: scene.sourceUrl,
+      attribution: scene.attribution,
+      query: scene.query || "",
+      prompt: scene.prompt || "",
       generatedAt: new Date().toISOString()
     };
     generated += 1;

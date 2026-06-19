@@ -1,6 +1,8 @@
 name: Generate Word Scene Images
 
 on:
+  schedule:
+    - cron: "20 8 * * *"
   workflow_dispatch:
 
 permissions:
@@ -12,11 +14,10 @@ jobs:
     env:
       TZ: America/Los_Angeles
       WORDMASTER_SCENE_START_DATE: "2026-06-01"
-      WORDMASTER_SCENE_DAYS_AHEAD: "0"
-      WORDMASTER_SCENE_MAX_GENERATIONS: "1"
-      WORDMASTER_SCENE_IMAGE_SIZE: "1K"
-      OPENROUTER_IMAGE_MODEL: "google/gemini-2.5-flash-image"
-      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+      WORDMASTER_SCENE_DAYS_AHEAD: "1"
+      WORDMASTER_SCENE_MAX_GENERATIONS: "20"
+      PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
+      PIXABAY_API_KEY: ${{ secrets.PIXABAY_API_KEY }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
