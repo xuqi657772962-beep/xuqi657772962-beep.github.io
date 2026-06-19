@@ -33,10 +33,9 @@ html { background: #17120d; }
 body {
   padding: env(safe-area-inset-top) 0 calc(88px + env(safe-area-inset-bottom));
   background:
-    radial-gradient(circle at 26% -8%, rgba(244,211,156,.22), transparent 34%),
-    radial-gradient(circle at 78% 10%, rgba(142,240,184,.16), transparent 32%),
-    radial-gradient(circle at 38% 82%, rgba(155,220,234,.13), transparent 36%),
-    linear-gradient(180deg, #101414 0%, #121715 48%, #080a09 100%);
+    radial-gradient(circle at 24% -8%, rgba(255,210,146,.22), transparent 34%),
+    radial-gradient(circle at 78% 4%, rgba(117,228,176,.2), transparent 32%),
+    linear-gradient(180deg, #111410 0%, #0b1110 48%, #050706 100%);
   position: relative;
 }
 body::before {
@@ -53,7 +52,7 @@ body::before {
     radial-gradient(circle at 66% 46%, rgba(142,240,184,.22), transparent 42%),
     radial-gradient(circle at 48% 72%, rgba(155,220,234,.16), transparent 42%);
   filter: blur(44px);
-  opacity: .78;
+  opacity: .52;
   z-index: 0;
 }
 body::after {
@@ -62,8 +61,8 @@ body::after {
   inset: 0;
   pointer-events: none;
   background:
-    linear-gradient(180deg, rgba(255,255,255,.04) 0%, transparent 34%, rgba(4,5,4,.72) 100%),
-    radial-gradient(circle at 50% 30%, transparent 0%, rgba(0,0,0,.12) 54%, rgba(0,0,0,.36) 100%);
+    linear-gradient(180deg, rgba(255,255,255,.03) 0%, transparent 38%, rgba(3,5,4,.42) 100%),
+    radial-gradient(circle at 50% 34%, transparent 0%, rgba(0,0,0,.05) 52%, rgba(0,0,0,.22) 100%);
   z-index: 0;
 }
 .scene-backdrop {
@@ -101,6 +100,31 @@ body::after {
   background: radial-gradient(circle at 58% 50%, var(--scene-b), transparent 64%), radial-gradient(circle at 34% 70%, var(--scene-c), transparent 58%);
   animation: sceneDrift 8s ease-in-out infinite alternate;
 }
+.scene-photo {
+  position: absolute;
+  inset: -7%;
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+  transform: scale(1.06);
+  transition: opacity .72s ease, transform 1.1s ease;
+  filter: brightness(.72) contrast(1.08) saturate(1.12);
+  will-change: opacity, transform;
+}
+.scene-photo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(3,5,4,.12) 0%, rgba(3,5,4,.24) 42%, rgba(3,5,4,.78) 100%),
+    radial-gradient(circle at 50% 36%, rgba(255,255,255,.08), transparent 28%),
+    radial-gradient(circle at 52% 44%, transparent 0%, rgba(0,0,0,.22) 70%, rgba(0,0,0,.44) 100%);
+}
+.scene-photo.is-live {
+  opacity: .92;
+  transform: scale(1.02);
+  animation: photoDrift 18s ease-in-out infinite alternate;
+}
 .scene-art {
   display: none;
 }
@@ -109,7 +133,9 @@ body::after {
   inset: 0;
   width: 100%;
   height: 100%;
-  opacity: .86;
+  opacity: .52;
+  filter: saturate(1.2) contrast(1.08);
+  mix-blend-mode: screen;
 }
 .scene-backdrop[data-scene="time"] { --scene-a: rgba(234,193,122,.26); --scene-b: rgba(155,220,234,.14); --scene-c: rgba(255,255,255,.08); }
 .scene-backdrop[data-scene="work"] { --scene-a: rgba(155,220,234,.22); --scene-b: rgba(142,240,184,.12); --scene-c: rgba(234,193,122,.1); }
@@ -220,7 +246,7 @@ body:not([data-view="learn"]) .stats { display: none; }
 .core-chip::before { content: ""; position: absolute; left: 0; top: 12px; bottom: 12px; width: 3px; border-radius: 999px; background: linear-gradient(var(--green), var(--blue)); }
 .core-chip b { display: block; color: var(--ink); font-size: 19px; line-height: 1; word-break: break-word; }
 .core-chip span { display: block; color: var(--muted); font-size: 12px; margin-top: 9px; }
-.today { background: linear-gradient(180deg, rgba(255,255,255,.1), rgba(255,255,255,.045)); border: 1px solid rgba(255,255,255,.15); border-radius: 26px; padding: 16px; margin-bottom: 16px; box-shadow: var(--shadow), inset 0 1px 0 rgba(255,255,255,.08); }
+.today { background: linear-gradient(180deg, rgba(255,255,255,.085), rgba(255,255,255,.032)); border: 1px solid rgba(255,255,255,.15); border-radius: 26px; padding: 16px; margin-bottom: 16px; box-shadow: var(--shadow), inset 0 1px 0 rgba(255,255,255,.08); }
 .today.is-done { border-color: rgba(61,243,163,.42); box-shadow: 0 0 42px rgba(61,243,163,.12), var(--shadow); }
 .today.flash-ok { animation: cardGlow .62s ease; }
 .section-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
@@ -304,16 +330,22 @@ input:focus, textarea:focus { border-color: rgba(85,214,255,.72); box-shadow: 0 
 .core-chip,
 .stat,
 .pill {
-  background: linear-gradient(145deg, rgba(255,255,255,.16), rgba(255,255,255,.062));
-  border: 1px solid rgba(255,255,255,.19);
-  box-shadow: 0 24px 60px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.18);
-  backdrop-filter: blur(24px) saturate(145%);
-  -webkit-backdrop-filter: blur(24px) saturate(145%);
+  background: linear-gradient(145deg, rgba(255,255,255,.13), rgba(255,255,255,.045));
+  border: 1px solid rgba(255,255,255,.18);
+  box-shadow: 0 22px 56px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.16);
+  backdrop-filter: blur(15px) saturate(145%);
+  -webkit-backdrop-filter: blur(15px) saturate(145%);
 }
 .mission-card {
   background:
-    linear-gradient(135deg, rgba(255,255,255,.18), rgba(255,255,255,.065) 45%, rgba(142,240,184,.07)),
-    rgba(16, 18, 15, .36);
+    linear-gradient(135deg, rgba(255,255,255,.14), rgba(255,255,255,.05) 45%, rgba(142,240,184,.055)),
+    rgba(8, 13, 10, .26);
+}
+.today,
+.practice {
+  background:
+    linear-gradient(145deg, rgba(255,255,255,.12), rgba(255,255,255,.04)),
+    rgba(7, 10, 9, .3);
 }
 .mission-card::after {
   background: linear-gradient(90deg, transparent, rgba(234,193,122,.72), rgba(142,240,184,.58), transparent);
@@ -373,6 +405,11 @@ textarea {
 @keyframes sceneDrift {
   0% { transform: translate3d(18px, 10px, 0) scale(1); opacity: .42; }
   100% { transform: translate3d(-24px, -12px, 0) scale(1.14); opacity: .68; }
+}
+@keyframes photoDrift {
+  0% { transform: scale(1.03) translate3d(-1.8%, -1.1%, 0); background-position: 48% 42%; }
+  50% { transform: scale(1.075) translate3d(1.6%, .8%, 0); background-position: 54% 47%; }
+  100% { transform: scale(1.045) translate3d(-.8%, 1.4%, 0); background-position: 50% 52%; }
 }
 @keyframes sceneClock {
   0%, 100% { transform: translateX(-6%) rotate(-5deg) scale(1); }
@@ -452,6 +489,8 @@ textarea {
 </head>
 <body data-view="learn">
 <div class="scene-backdrop" id="sceneBackdrop" aria-hidden="true">
+  <div class="scene-photo scene-photo-a is-live" id="scenePhotoA"></div>
+  <div class="scene-photo scene-photo-b" id="scenePhotoB"></div>
   <canvas class="scene-canvas" id="sceneCanvas"></canvas>
   <div class="scene-art" id="sceneArt"></div>
   <div class="scene-caption" id="sceneCaption"></div>
@@ -666,14 +705,14 @@ function sceneKindFor(word) {
   const text = clean(`${word.word} ${word.meaning} ${word.example || ""} ${word.core || ""}`);
   const checks = [
     ["time", /time|day|bedtime|timetable|birthday|weekday|时间|今天|白天|生日|日常/],
-    ["work", /work|job|office|team|interview|worker|money|工作|工人|团队|面试|钱/],
+    ["device", /phone|computer|internet|screen|smartphone|手机|电脑|互联网|网络|屏幕/],
+    ["people", /people|friend|name|person|parent|child|人们|朋友|名字|人际|父母|孩子/],
     ["school", /school|student|teacher|book|class|homework|learn|study|word|language|学习|学校|学生|老师|书|单词|语言/],
+    ["work", /work|job|office|team|interview|worker|money|工作|工人|团队|面试|钱/],
     ["home", /home|house|room|family|parent|child|家|房|家庭|父母|孩子|卧室|客厅/],
     ["water", /water|sea|waterfall|bottle|水|海|瀑布/],
     ["music", /music|headphone|song|音乐|耳机/],
     ["health", /health|body|food|eye|head|life|健康|身体|食物|眼|头|生活/],
-    ["device", /phone|computer|internet|screen|smartphone|手机|电脑|互联网|网络|屏幕/],
-    ["people", /people|friend|name|person|人们|朋友|名字|人际/],
     ["media", /game|movie|story|video|游戏|电影|故事|视频/],
     ["world", /world|country|worldwide|全球|世界|国家/],
     ["city", /city|road|car|countryside|城市|道路|汽车|乡村/]
@@ -686,12 +725,100 @@ function updateScene(word) {
   const kind = sceneKindFor(word);
   $("sceneBackdrop").dataset.scene = kind;
   currentScene = { kind, word: word.word, meaning: word.meaning, example: word.example || "", seed: hashScene(word.word) };
+  updateScenePhoto(word, kind);
   $("sceneCaption").textContent = word.example || `${word.word} can live inside a real sentence.`;
 }
 function hashScene(text) {
   return String(text || "").split("").reduce((sum, ch) => (sum * 31 + ch.charCodeAt(0)) >>> 0, 7);
 }
 let currentScene = { kind: "language", word: "", meaning: "", example: "", seed: 7 };
+let scenePhotoActive = "A";
+let scenePhotoUrl = "";
+let sceneManifest = {};
+function sceneSlug(value) {
+  return String(value || "")
+    .toLowerCase()
+    .replace(/['’]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+function sceneAssetKey(word) {
+  return `${sceneSlug(word.word)}-${hashScene(`${word.word}-${word.meaning}`) % 100000}`;
+}
+function scenePhotoTerms(word, kind) {
+  const text = clean(`${word.word} ${word.meaning} ${word.example || ""} ${word.core || ""}`);
+  const phrase = sceneSlug(word.word);
+  const terms = [phrase];
+  if (/exchange student/.test(text)) terms.push("international-student", "university-campus", "classroom");
+  else if (/computer science|computer room|computer screen|computer game|computer/.test(text)) terms.push("computer-lab", "student", "laptop");
+  else if (/student card|student id|student life|student/.test(text)) terms.push("student", "campus", "classroom");
+  else if (/old people|grandparent|healthcare|care/.test(text)) terms.push("elderly-care", "warm-home", "family");
+  else if (/young people|people person|people skills|people/.test(text)) terms.push("conversation", "friends", "cafe");
+  else if (/teacher|school|classroom|homework|textbook|notebook|book|word|language/.test(text)) terms.push("classroom", "study-desk", "notebook");
+  else if (/job interview|job offer|part-time job|full-time job|work|teamwork|office|worker/.test(text)) terms.push("office", "workplace", "meeting");
+  else if (/phone|smartphone|internet|screen|username|password|filename|homepage/.test(text)) terms.push("smartphone", "desk", "technology");
+  else if (/home|house|room|family|parent|child|bedtime|story/.test(text)) terms.push("home", "warm-light", "living-room");
+  else if (/city|road|car|country|world|travel/.test(text)) terms.push("street", "city-life", "travel");
+  else if (/water|waterfall|water bottle|watercolor/.test(text)) terms.push("water", "outdoor", "nature");
+  else if (/music|headphone|movie|game|video/.test(text)) terms.push("media", "headphones", "night");
+  else if (/health|body|food|eye|head|life/.test(text)) terms.push("healthy-lifestyle", "morning", "real-life");
+  else {
+    const defaults = {
+      time: ["morning-desk", "clock", "sunlight"],
+      device: ["technology", "desk", "screen"],
+      people: ["people", "real-life", "conversation"],
+      school: ["study", "classroom", "notebook"],
+      work: ["office", "desk", "meeting"],
+      home: ["home", "warm-light", "room"],
+      water: ["water", "nature", "outdoor"],
+      music: ["music", "headphones", "studio"],
+      health: ["healthy-lifestyle", "exercise", "morning"],
+      media: ["cinema", "screen", "media"],
+      world: ["travel", "city", "world"],
+      city: ["street", "city-life", "road"],
+      language: ["study", "notebook", "conversation"]
+    };
+    terms.push(...(defaults[kind] || defaults.language));
+  }
+  return [...new Set(terms.filter(Boolean))].slice(0, 4);
+}
+function scenePhotoFor(word, kind) {
+  const asset = sceneManifest[sceneAssetKey(word)];
+  if (asset && asset.src) return asset.src;
+  const terms = scenePhotoTerms(word, kind).join(",");
+  const lock = 1000 + (hashScene(`${word.word}-${word.meaning}`) % 8000);
+  return `https://loremflickr.com/1200/1800/${terms}?lock=${lock}`;
+}
+function updateScenePhoto(word, kind) {
+  const url = scenePhotoFor(word, kind);
+  if (url === scenePhotoUrl) return;
+  scenePhotoUrl = url;
+  const nextName = scenePhotoActive === "A" ? "B" : "A";
+  const next = $(`scenePhoto${nextName}`);
+  const current = $(`scenePhoto${scenePhotoActive}`);
+  const image = new Image();
+  image.onload = () => {
+    next.style.backgroundImage = `url("${url}")`;
+    next.classList.add("is-live");
+    current.classList.remove("is-live");
+    scenePhotoActive = nextName;
+  };
+  image.onerror = () => {
+    next.style.backgroundImage = "";
+  };
+  image.src = url;
+}
+function loadSceneManifest() {
+  fetch(`scenes/manifest.json?v=${todayKey()}`, { cache: "no-store" })
+    .then(response => response.ok ? response.json() : null)
+    .then(data => {
+      if (!data || !data.images) return;
+      sceneManifest = data.images;
+      const current = wordsForToday()[focusIndex];
+      if (current) updateScene(current);
+    })
+    .catch(() => {});
+}
 let sceneCanvasReady = false;
 function setupSceneCanvas() {
   if (sceneCanvasReady) return;
@@ -1401,6 +1528,7 @@ $("resetAllBtn").addEventListener("click", resetAll);
 setupSceneCanvas();
 markStudyDay();
 render();
+loadSceneManifest();
 </script>
 </body>
 </html>
