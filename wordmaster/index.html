@@ -163,6 +163,19 @@ body::after {
 .scene-backdrop[data-scene="world"] .scene-art,
 .scene-backdrop[data-scene="language"] .scene-art { animation: scenePulse 5.8s ease-in-out infinite; }
 .scene-caption {
+  position: fixed;
+  right: 14px;
+  bottom: calc(86px + env(safe-area-inset-bottom));
+  max-width: min(56vw, 260px);
+  color: rgba(255, 248, 234, .48);
+  font-size: 9px;
+  line-height: 1.35;
+  text-align: right;
+  text-shadow: 0 1px 8px rgba(0,0,0,.5);
+  letter-spacing: 0;
+  z-index: 1;
+}
+.scene-caption:empty {
   display: none;
 }
 button, input, textarea { font: inherit; }
@@ -726,7 +739,7 @@ function updateScene(word) {
   $("sceneBackdrop").dataset.scene = kind;
   currentScene = { kind, word: word.word, meaning: word.meaning, example: word.example || "", seed: hashScene(word.word) };
   updateScenePhoto(word, kind);
-  $("sceneCaption").textContent = word.example || `${word.word} can live inside a real sentence.`;
+  $("sceneCaption").textContent = "";
 }
 function hashScene(text) {
   return String(text || "").split("").reduce((sum, ch) => (sum * 31 + ch.charCodeAt(0)) >>> 0, 7);
@@ -790,6 +803,8 @@ function scenePhotoFor(word, kind) {
   return `https://loremflickr.com/1200/1800/${terms}?lock=${lock}`;
 }
 function updateScenePhoto(word, kind) {
+  const asset = sceneManifest[sceneAssetKey(word)];
+  $("sceneCaption").textContent = asset && asset.attribution ? asset.attribution : "";
   const url = scenePhotoFor(word, kind);
   if (url === scenePhotoUrl) return;
   scenePhotoUrl = url;
