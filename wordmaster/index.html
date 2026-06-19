@@ -102,22 +102,14 @@ body::after {
   animation: sceneDrift 8s ease-in-out infinite alternate;
 }
 .scene-art {
-  position: absolute;
-  top: 430px;
-  left: calc(50% + 36px);
-  width: 250px;
-  height: 205px;
-  color: rgba(255,248,234,.72);
-  opacity: .2;
-  filter: blur(.2px) drop-shadow(0 24px 46px rgba(0,0,0,.24));
-  transform: translateX(-6%) rotate(-4deg);
-  mask-image: linear-gradient(to bottom, transparent, rgba(0,0,0,.78) 22%, rgba(0,0,0,.45) 72%, transparent);
+  display: none;
 }
-.scene-art svg { width: 100%; height: 100%; }
-.scene-art svg g > * {
-  stroke-dasharray: 520;
-  stroke-dashoffset: 520;
-  animation: sceneDraw .9s ease forwards;
+.scene-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: .86;
 }
 .scene-backdrop[data-scene="time"] { --scene-a: rgba(234,193,122,.26); --scene-b: rgba(155,220,234,.14); --scene-c: rgba(255,255,255,.08); }
 .scene-backdrop[data-scene="work"] { --scene-a: rgba(155,220,234,.22); --scene-b: rgba(142,240,184,.12); --scene-c: rgba(234,193,122,.1); }
@@ -460,6 +452,7 @@ textarea {
 </head>
 <body data-view="learn">
 <div class="scene-backdrop" id="sceneBackdrop" aria-hidden="true">
+  <canvas class="scene-canvas" id="sceneCanvas"></canvas>
   <div class="scene-art" id="sceneArt"></div>
   <div class="scene-caption" id="sceneCaption"></div>
 </div>
@@ -692,13 +685,227 @@ function updateScene(word) {
   if (!word) return;
   const kind = sceneKindFor(word);
   $("sceneBackdrop").dataset.scene = kind;
-  $("sceneArt").innerHTML = sceneDrawings[kind] || sceneDrawings.language;
+  currentScene = { kind, word: word.word, meaning: word.meaning, example: word.example || "", seed: hashScene(word.word) };
   $("sceneCaption").textContent = word.example || `${word.word} can live inside a real sentence.`;
+}
+function hashScene(text) {
+  return String(text || "").split("").reduce((sum, ch) => (sum * 31 + ch.charCodeAt(0)) >>> 0, 7);
+}
+let currentScene = { kind: "language", word: "", meaning: "", example: "", seed: 7 };
+let sceneCanvasReady = false;
+function setupSceneCanvas() {
+  if (sceneCanvasReady) return;
+  sceneCanvasReady = true;
+  const canvas = $("sceneCanvas");
+  const ctx = canvas.getContext("2d");
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const resize = () => {
+    canvas.width = Math.floor(window.innerWidth * dpr);
+    canvas.height = Math.floor(window.innerHeight * dpr);
+    canvas.style.width = `${window.innerWidth}px`;
+    canvas.style.height = `${window.innerHeight}px`;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  };
+  window.addEventListener("resize", resize, { passive: true });
+  resize();
+  const loop = (time) => {
+    drawScene(ctx, window.innerWidth, window.innerHeight, time / 1000);
+    requestAnimationFrame(loop);
+  };
+  requestAnimationFrame(loop);
+}
+function scenePalette(kind) {
+  const palettes = {
+    time: ["rgba(234,193,122,.34)", "rgba(155,220,234,.2)", "rgba(255,255,255,.12)"],
+    work: ["rgba(155,220,234,.28)", "rgba(142,240,184,.18)", "rgba(234,193,122,.12)"],
+    school: ["rgba(234,193,122,.26)", "rgba(155,220,234,.2)", "rgba(142,240,184,.12)"],
+    home: ["rgba(255,207,145,.3)", "rgba(255,92,138,.13)", "rgba(142,240,184,.12)"],
+    water: ["rgba(97,190,215,.32)", "rgba(155,220,234,.22)", "rgba(142,240,184,.1)"],
+    music: ["rgba(255,92,138,.22)", "rgba(234,193,122,.26)", "rgba(155,220,234,.16)"],
+    health: ["rgba(142,240,184,.28)", "rgba(234,193,122,.16)", "rgba(255,92,138,.14)"],
+    device: ["rgba(95,205,230,.28)", "rgba(142,240,184,.2)", "rgba(255,255,255,.12)"],
+    people: ["rgba(234,193,122,.28)", "rgba(255,92,138,.14)", "rgba(142,240,184,.12)"],
+    media: ["rgba(255,92,138,.22)", "rgba(155,220,234,.18)", "rgba(234,193,122,.14)"],
+    world: ["rgba(142,240,184,.25)", "rgba(155,220,234,.22)", "rgba(234,193,122,.1)"],
+    city: ["rgba(155,220,234,.22)", "rgba(234,193,122,.2)", "rgba(142,240,184,.12)"],
+    language: ["rgba(234,193,122,.24)", "rgba(155,220,234,.18)", "rgba(142,240,184,.12)"]
+  };
+  return palettes[kind] || palettes.language;
+}
+function roundedRect(ctx, x, y, w, h, r) {
+  const radius = Math.min(r, w / 2, h / 2);
+  ctx.beginPath();
+  ctx.moveTo(x + radius, y);
+  ctx.arcTo(x + w, y, x + w, y + h, radius);
+  ctx.arcTo(x + w, y + h, x, y + h, radius);
+  ctx.arcTo(x, y + h, x, y, radius);
+  ctx.arcTo(x, y, x + w, y, radius);
+  ctx.closePath();
+}
+function drawScene(ctx, w, h, t) {
+  const kind = currentScene.kind || "language";
+  const [a, b, c] = scenePalette(kind);
+  ctx.clearRect(0, 0, w, h);
+  const glow = ctx.createRadialGradient(w * .58, h * .33, 0, w * .58, h * .33, Math.max(w, h) * .6);
+  glow.addColorStop(0, a);
+  glow.addColorStop(.44, b);
+  glow.addColorStop(1, "rgba(0,0,0,0)");
+  ctx.fillStyle = glow;
+  ctx.fillRect(0, 0, w, h);
+  ctx.save();
+  ctx.globalAlpha = .72;
+  if (kind === "time") drawTimeScene(ctx, w, h, t, a, b);
+  else if (kind === "water") drawWaterScene(ctx, w, h, t, a, b);
+  else if (kind === "music") drawMusicScene(ctx, w, h, t, a, b);
+  else if (kind === "device") drawDeviceScene(ctx, w, h, t, a, b);
+  else if (kind === "city") drawCityScene(ctx, w, h, t, a, b);
+  else if (kind === "work") drawWorkScene(ctx, w, h, t, a, b);
+  else if (kind === "school") drawSchoolScene(ctx, w, h, t, a, b);
+  else if (kind === "home") drawHomeScene(ctx, w, h, t, a, b);
+  else if (kind === "people") drawPeopleScene(ctx, w, h, t, a, b);
+  else if (kind === "health") drawHealthScene(ctx, w, h, t, a, b);
+  else if (kind === "world") drawWorldScene(ctx, w, h, t, a, b);
+  else drawLanguageScene(ctx, w, h, t, a, b);
+  ctx.restore();
+  ctx.fillStyle = c;
+  for (let i = 0; i < 18; i += 1) {
+    const x = (currentScene.seed * (i + 3) * 17 + t * (8 + i % 4)) % (w + 80) - 40;
+    const y = 86 + ((currentScene.seed + i * 47) % Math.max(220, h - 160));
+    ctx.globalAlpha = .06 + (i % 5) * .018;
+    ctx.beginPath();
+    ctx.arc(x, y + Math.sin(t + i) * 8, 1.4 + (i % 4), 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+}
+function strokeGlass(ctx, color, width = 2) {
+  ctx.strokeStyle = color;
+  ctx.lineWidth = width;
+  ctx.lineCap = "round";
+  ctx.lineJoin = "round";
+}
+function fillGlass(ctx, color) {
+  ctx.fillStyle = color;
+}
+function drawTimeScene(ctx, w, h, t, a, b) {
+  const cx = w * .72, cy = h * .31, r = Math.min(w, h) * .13;
+  strokeGlass(ctx, "rgba(255,248,234,.22)", 3);
+  ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.stroke();
+  strokeGlass(ctx, a, 5);
+  ctx.beginPath(); ctx.arc(cx, cy, r + 18, -Math.PI / 2, -Math.PI / 2 + (t % 6) / 6 * Math.PI * 2); ctx.stroke();
+  strokeGlass(ctx, "rgba(255,248,234,.38)", 4);
+  ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + Math.cos(t * .55) * r * .58, cy + Math.sin(t * .55) * r * .58); ctx.stroke();
+  strokeGlass(ctx, b, 3);
+  ctx.beginPath(); ctx.moveTo(w * .18, h * .47); ctx.bezierCurveTo(w * .38, h * .39, w * .56, h * .54, w * .83, h * .45); ctx.stroke();
+}
+function drawWaterScene(ctx, w, h, t, a, b) {
+  for (let j = 0; j < 4; j += 1) {
+    strokeGlass(ctx, j % 2 ? a : b, 3);
+    ctx.globalAlpha = .22 - j * .025;
+    ctx.beginPath();
+    for (let x = -30; x <= w + 30; x += 18) {
+      const y = h * (.36 + j * .08) + Math.sin(x * .025 + t * (1.2 + j * .15)) * (10 + j * 2);
+      if (x === -30) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+  }
+  ctx.globalAlpha = .35;
+  ctx.beginPath(); ctx.arc(w * .7, h * .36, 54 + Math.sin(t) * 4, 0, Math.PI * 2); ctx.stroke();
+}
+function drawMusicScene(ctx, w, h, t, a, b) {
+  const base = h * .48;
+  for (let i = 0; i < 8; i += 1) {
+    const bh = 26 + Math.abs(Math.sin(t * 1.8 + i)) * 94;
+    fillGlass(ctx, i % 2 ? a : b);
+    ctx.globalAlpha = .18;
+    roundedRect(ctx, w * .18 + i * 30, base - bh, 12, bh, 8); ctx.fill();
+  }
+  strokeGlass(ctx, "rgba(255,248,234,.26)", 4);
+  ctx.beginPath(); ctx.moveTo(w * .62, h * .28); ctx.lineTo(w * .62, h * .49); ctx.arc(w * .57, h * .5, 18, 0, Math.PI * 2); ctx.stroke();
+}
+function drawDeviceScene(ctx, w, h, t, a, b) {
+  fillGlass(ctx, "rgba(255,255,255,.08)");
+  roundedRect(ctx, w * .18, h * .24, w * .56, h * .25, 22); ctx.fill();
+  strokeGlass(ctx, "rgba(255,255,255,.22)", 2); ctx.stroke();
+  for (let i = 0; i < 9; i += 1) {
+    strokeGlass(ctx, i % 2 ? a : b, 2);
+    ctx.globalAlpha = .16 + Math.sin(t * 2 + i) * .05;
+    ctx.beginPath();
+    ctx.moveTo(w * .24, h * .3 + i * 13);
+    ctx.lineTo(w * (.38 + ((i * 7 + currentScene.seed) % 24) / 100), h * .3 + i * 13);
+    ctx.stroke();
+  }
+  fillGlass(ctx, "rgba(255,255,255,.11)");
+  roundedRect(ctx, w * .3, h * .51, w * .32, 18, 9); ctx.fill();
+}
+function drawCityScene(ctx, w, h, t, a, b) {
+  const ground = h * .56;
+  fillGlass(ctx, "rgba(255,255,255,.075)");
+  for (let i = 0; i < 7; i += 1) {
+    const bw = 28 + (i % 3) * 12;
+    const bh = 72 + ((i * 19 + currentScene.seed) % 78);
+    roundedRect(ctx, w * .12 + i * 43, ground - bh, bw, bh, 6); ctx.fill();
+  }
+  strokeGlass(ctx, a, 3);
+  ctx.beginPath(); ctx.moveTo(0, ground + 32); ctx.lineTo(w, ground + 8); ctx.stroke();
+  fillGlass(ctx, b);
+  ctx.globalAlpha = .28;
+  roundedRect(ctx, (t * 42) % (w + 80) - 60, ground + 10, 42, 13, 8); ctx.fill();
+}
+function drawWorkScene(ctx, w, h, t, a, b) {
+  drawDeviceScene(ctx, w, h, t, a, b);
+  strokeGlass(ctx, "rgba(255,248,234,.2)", 3);
+  ctx.beginPath(); ctx.moveTo(w * .1, h * .59); ctx.lineTo(w * .86, h * .53); ctx.stroke();
+  fillGlass(ctx, a);
+  ctx.globalAlpha = .14;
+  roundedRect(ctx, w * .68, h * .35 + Math.sin(t) * 4, 52, 76, 10); ctx.fill();
+}
+function drawSchoolScene(ctx, w, h, t, a, b) {
+  fillGlass(ctx, "rgba(255,255,255,.08)");
+  ctx.beginPath();
+  ctx.moveTo(w * .18, h * .36); ctx.quadraticCurveTo(w * .35, h * .29 + Math.sin(t) * 4, w * .5, h * .38);
+  ctx.quadraticCurveTo(w * .66, h * .29 - Math.sin(t) * 4, w * .82, h * .36);
+  ctx.lineTo(w * .82, h * .56); ctx.quadraticCurveTo(w * .65, h * .49, w * .5, h * .58);
+  ctx.quadraticCurveTo(w * .35, h * .49, w * .18, h * .56); ctx.closePath(); ctx.fill();
+  strokeGlass(ctx, a, 2);
+  for (let i = 0; i < 5; i += 1) { ctx.beginPath(); ctx.moveTo(w * .25, h * (.4 + i * .03)); ctx.lineTo(w * .43, h * (.39 + i * .03)); ctx.stroke(); }
+}
+function drawHomeScene(ctx, w, h, t, a, b) {
+  strokeGlass(ctx, "rgba(255,248,234,.24)", 4);
+  ctx.beginPath(); ctx.moveTo(w * .22, h * .46); ctx.lineTo(w * .5, h * .25); ctx.lineTo(w * .78, h * .46); ctx.stroke();
+  fillGlass(ctx, "rgba(255,255,255,.08)"); roundedRect(ctx, w * .28, h * .43, w * .44, h * .18, 14); ctx.fill();
+  fillGlass(ctx, a); ctx.globalAlpha = .18 + Math.sin(t * 1.4) * .04; roundedRect(ctx, w * .48, h * .49, 36, 56, 10); ctx.fill();
+}
+function drawPeopleScene(ctx, w, h, t, a, b) {
+  fillGlass(ctx, a); ctx.globalAlpha = .2;
+  [[.38,.38,28],[.58,.4,24],[.47,.52,34]].forEach(([x,y,r], i) => { ctx.beginPath(); ctx.arc(w*x, h*y + Math.sin(t+i)*5, r, 0, Math.PI*2); ctx.fill(); });
+  strokeGlass(ctx, "rgba(255,248,234,.18)", 4); ctx.beginPath(); ctx.arc(w*.48, h*.47, 116, Math.PI*.16, Math.PI*.84); ctx.stroke();
+}
+function drawHealthScene(ctx, w, h, t, a, b) {
+  strokeGlass(ctx, a, 4);
+  ctx.beginPath(); ctx.moveTo(w*.18, h*.47); ctx.lineTo(w*.34, h*.47); ctx.lineTo(w*.4, h*.39); ctx.lineTo(w*.5, h*.56); ctx.lineTo(w*.58, h*.43); ctx.lineTo(w*.72, h*.43); ctx.stroke();
+  fillGlass(ctx, b); ctx.globalAlpha=.15 + Math.sin(t)*.04; ctx.beginPath(); ctx.arc(w*.5, h*.39, 64, 0, Math.PI*2); ctx.fill();
+}
+function drawWorldScene(ctx, w, h, t, a, b) {
+  const cx=w*.58, cy=h*.38, r=82;
+  strokeGlass(ctx, a, 3); ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2); ctx.stroke();
+  strokeGlass(ctx, b, 2);
+  for (let i=-1;i<=1;i+=1){ ctx.beginPath(); ctx.ellipse(cx, cy, r*(.35+i*.12), r, Math.sin(t*.18), 0, Math.PI*2); ctx.stroke(); }
+  ctx.beginPath(); ctx.moveTo(cx-r, cy); ctx.lineTo(cx+r, cy); ctx.stroke();
+}
+function drawLanguageScene(ctx, w, h, t, a, b) {
+  fillGlass(ctx, "rgba(255,255,255,.08)");
+  roundedRect(ctx, w*.2, h*.3, w*.54, h*.18, 22); ctx.fill();
+  roundedRect(ctx, w*.32, h*.48, w*.46, h*.14, 20); ctx.fill();
+  strokeGlass(ctx, a, 3);
+  for (let i=0;i<4;i+=1){ ctx.beginPath(); ctx.moveTo(w*.27, h*(.35+i*.035)); ctx.lineTo(w*(.48+Math.sin(t+i)*.04), h*(.35+i*.035)); ctx.stroke(); }
 }
 
 let state = loadState();
 let focusIndex = 0;
 let practice = { pool: [], wordIndex: 0, round: 1, done: 0 };
+let speakingAll = false;
+let speakAllTimer = 0;
 
 function loadState() {
   const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
@@ -875,27 +1082,53 @@ function speakWord(word, options = {}) {
     toast("这个浏览器暂不支持语音");
     return;
   }
-  if (!options.keepQueue) window.speechSynthesis.cancel();
+  if (!options.keepQueue) {
+    stopSpeakingAll(false);
+    window.speechSynthesis.cancel();
+  }
   const utterance = buildUtterance(word, options.rate || 0.82);
   window.speechSynthesis.speak(utterance);
+}
+function stopSpeakingAll(showToast = true) {
+  speakingAll = false;
+  clearTimeout(speakAllTimer);
+  if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+  const btn = $("speakAllBtn");
+  if (btn) btn.textContent = "连续朗读今日单词";
+  if (showToast) toast("已停止朗读");
 }
 function speakTodayWords() {
   if (!("speechSynthesis" in window)) {
     toast("这个浏览器暂不支持语音");
     return;
   }
+  if (speakingAll) {
+    stopSpeakingAll();
+    return;
+  }
   const words = wordsForToday().map(w => w.word);
   let index = 0;
+  speakingAll = true;
+  $("speakAllBtn").textContent = "停止朗读";
   window.speechSynthesis.cancel();
   const next = () => {
-    if (index >= words.length) return;
+    if (!speakingAll) return;
+    if (index >= words.length) {
+      stopSpeakingAll(false);
+      toast("今日单词朗读完成");
+      return;
+    }
     const utterance = buildUtterance(words[index], 0.78);
     index += 1;
-    utterance.onend = () => setTimeout(next, 280);
+    utterance.onend = () => {
+      clearTimeout(speakAllTimer);
+      speakAllTimer = setTimeout(next, 280);
+    };
+    utterance.onerror = () => stopSpeakingAll(false);
     window.speechSynthesis.speak(utterance);
   };
   next();
-  toast("开始连续朗读");
+  toast("开始连续朗读，再点一次可停止");
 }
 function render() {
   const todayWords = wordsForToday();
@@ -1165,6 +1398,7 @@ $("importBtn").addEventListener("click", importWords);
 $("resetStartBtn").addEventListener("click", resetStart);
 $("resetAllBtn").addEventListener("click", resetAll);
 
+setupSceneCanvas();
 markStudyDay();
 render();
 </script>
