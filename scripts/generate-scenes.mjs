@@ -11,11 +11,12 @@ const MANIFEST_FILE = path.join(SCENES_DIR, "manifest.json");
 const WORDS_PER_DAY = 10;
 const GROUP_SIZE = 5;
 const GROUPS_PER_DAY = Math.max(1, Math.floor(WORDS_PER_DAY / GROUP_SIZE));
-const MODEL = process.env.OPENROUTER_IMAGE_MODEL || "black-forest-labs/flux.2-klein-4b";
+const MODEL = process.env.OPENROUTER_IMAGE_MODEL || "google/gemini-2.5-flash-image";
 const START_DATE = process.env.WORDMASTER_SCENE_START_DATE || "2026-06-01";
-const DAYS_AHEAD = Number(process.env.WORDMASTER_SCENE_DAYS_AHEAD || 10);
-const MAX_GENERATIONS = Number(process.env.WORDMASTER_SCENE_MAX_GENERATIONS || 120);
+const DAYS_AHEAD = Number(process.env.WORDMASTER_SCENE_DAYS_AHEAD || 2);
+const MAX_GENERATIONS = Number(process.env.WORDMASTER_SCENE_MAX_GENERATIONS || 30);
 const API_TOKEN = process.env.OPENROUTER_API_KEY || "";
+const IMAGE_SIZE = process.env.WORDMASTER_SCENE_IMAGE_SIZE || "1K";
 
 function todayKey() {
   const d = new Date();
@@ -133,7 +134,7 @@ async function createImage(prompt, seed) {
       modalities: ["image"],
       image_config: {
         aspect_ratio: "9:16",
-        image_size: "1K"
+        image_size: IMAGE_SIZE
       }
     })
   });
