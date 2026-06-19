@@ -10,88 +10,107 @@
 <title>每日单词</title>
 <style>
 :root {
-  --bg: #101319;
-  --panel: #181d25;
-  --panel-2: #202733;
-  --text: #f4f1eb;
-  --muted: #9ba4b4;
-  --line: rgba(255,255,255,.09);
-  --green: #48d597;
-  --blue: #69a7ff;
-  --gold: #f4bf63;
-  --red: #ff6f6f;
+  --bg: #f6f2ea;
+  --ink: #19202a;
+  --text: #252b35;
+  --muted: #777f8d;
+  --panel: #fffdf8;
+  --panel-2: #f0eadf;
+  --line: rgba(35, 41, 51, .1);
+  --green: #2f9e75;
+  --blue: #376bff;
+  --gold: #c27a24;
+  --red: #d84a4a;
+  --shadow: 0 18px 40px rgba(50, 43, 31, .11);
 }
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-html, body { margin: 0; min-height: 100%; background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
-body { padding: env(safe-area-inset-top) 0 calc(82px + env(safe-area-inset-bottom)); }
+html, body { margin: 0; min-height: 100%; background: radial-gradient(circle at 50% -10%, #fff7e7 0, #f6f2ea 42%, #eef3ed 100%); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+body { padding: env(safe-area-inset-top) 0 calc(86px + env(safe-area-inset-bottom)); }
 button, input, textarea { font: inherit; }
 button { border: 0; color: inherit; cursor: pointer; }
 .app { width: min(100%, 520px); margin: 0 auto; padding: 18px 16px 0; }
-.top { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; margin: 10px 0 18px; }
-.kicker { color: var(--gold); font-size: 12px; letter-spacing: .12em; margin-bottom: 7px; }
-h1 { margin: 0; font-size: 30px; line-height: 1.12; letter-spacing: 0; }
+.top { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; margin: 8px 0 14px; }
+.kicker { color: var(--gold); font-size: 11px; letter-spacing: .16em; margin-bottom: 7px; font-weight: 800; }
+h1 { margin: 0; color: var(--ink); font-size: 30px; line-height: 1.08; letter-spacing: 0; }
 .date { color: var(--muted); font-size: 13px; margin-top: 8px; }
-.pill { min-width: 78px; text-align: center; border: 1px solid var(--line); background: var(--panel); border-radius: 999px; padding: 8px 10px; }
-.pill strong { display: block; color: var(--green); font-size: 20px; line-height: 1; }
+.pill { min-width: 76px; text-align: center; border: 1px solid var(--line); background: rgba(255,255,255,.68); border-radius: 18px; padding: 9px 10px; box-shadow: 0 10px 24px rgba(34, 38, 47, .08); }
+.pill strong { display: block; color: var(--green); font-size: 23px; line-height: 1; }
 .pill span { display: block; color: var(--muted); font-size: 11px; margin-top: 4px; }
-.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; margin-bottom: 16px; }
-.stat { min-height: 74px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 12px; }
-.stat b { display: block; font-size: 22px; line-height: 1; }
-.stat span { display: block; color: var(--muted); font-size: 12px; margin-top: 8px; }
-.today { background: linear-gradient(160deg, #1f2837, #151a22 66%); border: 1px solid var(--line); border-radius: 8px; padding: 16px; margin-bottom: 14px; }
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px; }
+.stat { min-height: 66px; background: rgba(255,255,255,.72); border: 1px solid var(--line); border-radius: 14px; padding: 11px 10px; }
+.stat b { display: block; color: var(--ink); font-size: 21px; line-height: 1; }
+.stat span { display: block; color: var(--muted); font-size: 12px; margin-top: 7px; }
+.daily-brief { margin-bottom: 12px; }
+.core-strip { display: grid; grid-template-columns: repeat(2, 1fr); gap: 9px; }
+.core-chip { min-height: 58px; border: 1px solid var(--line); border-radius: 16px; background: rgba(255,255,255,.72); padding: 11px 12px; }
+.core-chip b { display: block; color: var(--ink); font-size: 18px; line-height: 1; word-break: break-word; }
+.core-chip span { display: block; color: var(--muted); font-size: 12px; margin-top: 7px; }
+.today { background: var(--panel); border: 1px solid var(--line); border-radius: 20px; padding: 17px; margin-bottom: 14px; box-shadow: var(--shadow); }
 .section-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
-.section-head h2 { margin: 0; font-size: 17px; letter-spacing: 0; }
+.section-head h2 { margin: 0; color: var(--ink); font-size: 17px; letter-spacing: 0; }
 .small { color: var(--muted); font-size: 12px; }
-.word-main { font-size: 34px; line-height: 1; margin: 16px 0 8px; word-break: break-word; }
+.focus-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.word-main { color: var(--ink); font-size: 40px; font-weight: 850; line-height: 1; margin: 14px 0 8px; word-break: break-word; }
 .phonetic { color: var(--blue); font-size: 15px; margin-bottom: 10px; }
-.meaning { font-size: 20px; line-height: 1.35; margin-bottom: 12px; }
-.example { color: var(--muted); font-size: 14px; line-height: 1.55; border-left: 3px solid rgba(105,167,255,.5); padding-left: 10px; }
+.meaning { color: var(--ink); font-size: 20px; line-height: 1.35; margin-bottom: 12px; }
+.example { color: var(--muted); font-size: 14px; line-height: 1.55; border-left: 3px solid rgba(55,107,255,.38); padding-left: 10px; }
 .row { display: flex; gap: 10px; align-items: center; }
 .row > * { flex: 1; }
-.btn { min-height: 46px; border-radius: 8px; background: var(--panel-2); border: 1px solid var(--line); padding: 11px 13px; font-weight: 650; }
-.btn.primary { background: var(--green); color: #07120c; border-color: transparent; }
-.btn.blue { background: var(--blue); color: #07111f; border-color: transparent; }
+.btn { min-height: 48px; border-radius: 14px; background: var(--panel-2); border: 1px solid var(--line); padding: 11px 13px; font-weight: 720; }
+.btn.primary { background: var(--green); color: white; border-color: transparent; }
+.btn.blue { background: var(--blue); color: white; border-color: transparent; }
 .btn.ghost { background: transparent; }
 .btn.danger { color: var(--red); }
-.btn.speak { background: rgba(105,167,255,.13); color: var(--blue); }
+.btn.speak { background: rgba(55,107,255,.1); color: var(--blue); }
 .btn:disabled { opacity: .5; cursor: not-allowed; }
-.tabs { position: fixed; left: 50%; bottom: 0; transform: translateX(-50%); width: min(100%, 520px); display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px; padding: 9px 12px calc(9px + env(safe-area-inset-bottom)); background: rgba(16,19,25,.92); border-top: 1px solid var(--line); backdrop-filter: blur(18px); z-index: 10; }
-.tab { min-height: 48px; border-radius: 8px; background: transparent; color: var(--muted); font-size: 12px; }
-.tab strong { display: block; font-size: 18px; line-height: 1; margin-bottom: 4px; }
-.tab.active { background: var(--panel-2); color: var(--text); }
+.icon-btn { flex: 0 0 auto; width: 44px; min-height: 44px; display: inline-flex; align-items: center; justify-content: center; border-radius: 14px; background: rgba(55,107,255,.1); color: var(--blue); border: 1px solid rgba(55,107,255,.15); }
+.icon-btn svg, .tab svg, .mini-speak svg { width: 20px; height: 20px; stroke: currentColor; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.tabs { position: fixed; left: 50%; bottom: 0; transform: translateX(-50%); width: min(100%, 520px); display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px; padding: 9px 12px calc(9px + env(safe-area-inset-bottom)); background: rgba(255,253,248,.88); border-top: 1px solid var(--line); backdrop-filter: blur(18px); z-index: 10; }
+.tab { min-height: 50px; border-radius: 16px; background: transparent; color: var(--muted); font-size: 12px; display: grid; place-items: center; gap: 2px; }
+.tab svg { width: 21px; height: 21px; }
+.tab.active { background: var(--ink); color: #fffdf8; }
 .view { display: none; }
 .view.active { display: block; }
 .list { display: grid; gap: 10px; }
-.card { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 14px; }
+.card { background: rgba(255,255,255,.72); border: 1px solid var(--line); border-radius: 16px; padding: 14px; }
+.word-group { display: grid; gap: 9px; margin-bottom: 14px; }
+.group-title { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; padding: 2px 2px 0; }
+.group-title b { color: var(--ink); font-size: 18px; }
+.group-title span { color: var(--muted); font-size: 12px; }
+.group-words { display: grid; gap: 9px; }
 .word-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
-.word-row b { font-size: 20px; }
+.word-row[role="button"] { cursor: pointer; }
+.word-row b { color: var(--ink); font-size: 20px; }
 .word-row span { color: var(--muted); font-size: 13px; }
-.tag { display: inline-flex; align-items: center; min-height: 24px; border-radius: 999px; padding: 3px 9px; font-size: 12px; background: rgba(255,255,255,.06); color: var(--muted); white-space: nowrap; }
-.tag.done { background: rgba(72,213,151,.14); color: var(--green); }
-.tag.bad { background: rgba(255,111,111,.14); color: var(--red); }
-.practice { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 16px; }
+.tag { display: inline-flex; align-items: center; min-height: 24px; border-radius: 999px; padding: 3px 9px; font-size: 12px; background: rgba(37,43,53,.06); color: var(--muted); white-space: nowrap; }
+.tag.done { background: rgba(47,158,117,.13); color: var(--green); }
+.tag.bad { background: rgba(216,74,74,.12); color: var(--red); }
+.word-actions { display: flex; align-items: center; gap: 8px; flex: 0 0 auto; }
+.mini-speak { width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center; border-radius: 12px; color: var(--blue); background: rgba(55,107,255,.09); border: 1px solid rgba(55,107,255,.12); }
+.practice { background: var(--panel); border: 1px solid var(--line); border-radius: 20px; padding: 17px; box-shadow: var(--shadow); }
 .prompt { color: var(--muted); font-size: 13px; margin-bottom: 10px; }
-.hint-word { min-height: 34px; color: var(--gold); font-size: 28px; font-weight: 800; letter-spacing: .02em; margin-bottom: 10px; }
+.hint-word { min-height: 34px; color: var(--gold); font-size: 30px; font-weight: 850; letter-spacing: 0; margin-bottom: 10px; word-break: break-word; }
 .hint-word.hidden { color: var(--muted); font-size: 16px; font-weight: 500; }
-input, textarea { width: 100%; min-height: 52px; border: 1px solid var(--line); border-radius: 8px; background: #0d1016; color: var(--text); padding: 13px 14px; outline: none; }
+input, textarea { width: 100%; min-height: 52px; border: 1px solid var(--line); border-radius: 14px; background: #fffdfa; color: var(--text); padding: 13px 14px; outline: none; }
 textarea { min-height: 118px; resize: vertical; line-height: 1.45; }
-input:focus, textarea:focus { border-color: rgba(105,167,255,.75); }
+input:focus, textarea:focus { border-color: rgba(55,107,255,.7); }
 .feedback { min-height: 42px; margin: 10px 0; color: var(--muted); font-size: 14px; line-height: 1.45; }
 .feedback.ok { color: var(--green); }
 .feedback.no { color: var(--red); }
-.bar { height: 8px; background: rgba(255,255,255,.08); border-radius: 999px; overflow: hidden; margin: 12px 0 2px; }
+.bar { height: 8px; background: rgba(37,43,53,.08); border-radius: 999px; overflow: hidden; margin: 12px 0 2px; }
 .bar i { display: block; height: 100%; width: 0%; background: var(--green); border-radius: inherit; transition: width .25s ease; }
 .settings { display: grid; gap: 12px; }
 .note { color: var(--muted); font-size: 13px; line-height: 1.6; }
 .empty { color: var(--muted); text-align: center; padding: 28px 8px; }
-.toast { position: fixed; left: 50%; bottom: calc(78px + env(safe-area-inset-bottom)); transform: translateX(-50%); max-width: calc(100% - 34px); background: #eef3ee; color: #101319; border-radius: 999px; padding: 10px 14px; font-size: 14px; box-shadow: 0 12px 40px rgba(0,0,0,.35); opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s; z-index: 20; }
+.toast { position: fixed; left: 50%; bottom: calc(78px + env(safe-area-inset-bottom)); transform: translateX(-50%); max-width: calc(100% - 34px); background: var(--ink); color: #fffdf8; border-radius: 999px; padding: 10px 14px; font-size: 14px; box-shadow: 0 12px 40px rgba(0,0,0,.25); opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s; z-index: 20; }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(-6px); }
 @media (max-width: 360px) {
   .app { padding-left: 12px; padding-right: 12px; }
   h1 { font-size: 27px; }
-  .word-main { font-size: 30px; }
+  .word-main { font-size: 34px; }
   .stats { gap: 7px; }
   .stat { padding: 10px; }
+  .btn { padding-left: 10px; padding-right: 10px; }
 }
 </style>
 </head>
@@ -116,14 +135,28 @@ input:focus, textarea:focus { border-color: rgba(105,167,255,.75); }
   </section>
 
   <section id="view-learn" class="view active">
+    <div class="daily-brief">
+      <div class="section-head">
+        <h2>今日核心词</h2>
+        <span class="small" id="newWordText">10 个新词</span>
+      </div>
+      <div class="core-strip" id="coreStrip"></div>
+    </div>
+
     <div class="today">
       <div class="section-head">
-        <h2>今日 10 个词</h2>
-        <span class="small" id="autoText">每天自动更新</span>
+        <h2>当前单词</h2>
+        <span class="small" id="focusPosition">1/10</span>
       </div>
-      <div class="word-main" id="focusWord">word</div>
-      <div class="phonetic" id="focusPhonetic"></div>
-      <button class="btn speak" id="speakFocusBtn" style="width:100%; margin: 0 0 12px;">朗读单词</button>
+      <div class="focus-top">
+        <div>
+          <div class="word-main" id="focusWord">word</div>
+          <div class="phonetic" id="focusPhonetic"></div>
+        </div>
+        <button class="icon-btn" id="speakFocusBtn" title="朗读当前单词" aria-label="朗读当前单词">
+          <svg viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4V5Z"></path><path d="M15 9.5a4 4 0 0 1 0 5"></path><path d="M17.7 6.8a8 8 0 0 1 0 10.4"></path></svg>
+        </button>
+      </div>
       <div class="meaning" id="focusMeaning"></div>
       <div class="example" id="focusExample"></div>
       <div class="bar"><i id="todayBar"></i></div>
@@ -132,6 +165,7 @@ input:focus, textarea:focus { border-color: rgba(105,167,255,.75); }
         <button class="btn primary" id="knownBtn">记住了</button>
         <button class="btn" id="nextBtn">下一个</button>
       </div>
+      <button class="btn speak" id="speakAllBtn" style="width:100%; margin-top:10px;">连续朗读今日单词</button>
     </div>
     <div class="list" id="wordList"></div>
   </section>
@@ -142,7 +176,7 @@ input:focus, textarea:focus { border-color: rgba(105,167,255,.75); }
         <h2>拼写练习</h2>
         <span class="small" id="roundText">第 1/10 遍</span>
       </div>
-      <div class="prompt">根据中文意思输入英文。前 7 遍给你看单词，后 3 遍凭记忆。</div>
+      <div class="prompt" id="practicePrompt">根据中文意思输入英文。前 7 遍给你看单词，后 3 遍凭记忆。</div>
       <div class="hint-word" id="practiceHint"></div>
       <button class="btn speak" id="speakPracticeBtn" style="width:100%; margin: 0 0 12px;">朗读当前单词</button>
       <div class="meaning" id="practiceMeaning"></div>
@@ -193,10 +227,22 @@ input:focus, textarea:focus { border-color: rgba(105,167,255,.75); }
 </main>
 
 <nav class="tabs">
-  <button class="tab active" data-tab="learn"><strong>书</strong>学习</button>
-  <button class="tab" data-tab="practice"><strong>写</strong>练习</button>
-  <button class="tab" data-tab="review"><strong>错</strong>复习</button>
-  <button class="tab" data-tab="settings"><strong>设</strong>设置</button>
+  <button class="tab active" data-tab="learn" aria-label="学习">
+    <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15Z"></path></svg>
+    <span>学习</span>
+  </button>
+  <button class="tab" data-tab="practice" aria-label="练习">
+    <svg viewBox="0 0 24 24"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5Z"></path></svg>
+    <span>练习</span>
+  </button>
+  <button class="tab" data-tab="review" aria-label="复习">
+    <svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7"></path><path d="M3 4v6h6"></path><path d="M12 7v5l3 2"></path></svg>
+    <span>复习</span>
+  </button>
+  <button class="tab" data-tab="settings" aria-label="设置">
+    <svg viewBox="0 0 24 24"><path d="M12 15.5A3.5 3.5 0 1 0 12 8a3.5 3.5 0 0 0 0 7.5Z"></path><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 0 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 0 1-4 0v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1A2 2 0 0 1 4.2 17l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 0 1 0-4h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.9L4.2 7A2 2 0 0 1 7 4.2l.1.1a1.7 1.7 0 0 0 1.9.3 1.7 1.7 0 0 0 1-1.5V3a2 2 0 0 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1A2 2 0 0 1 19.8 7l-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.5 1h.1a2 2 0 0 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"></path></svg>
+    <span>设置</span>
+  </button>
 </nav>
 <div class="toast" id="toast"></div>
 
@@ -224,6 +270,13 @@ const toDate = (key) => {
 };
 const daysBetween = (a, b) => Math.floor((toDate(b) - toDate(a)) / 86400000);
 const clean = (s) => String(s || "").trim().toLowerCase().replace(/\s+/g, " ");
+const escapeHtml = (s) => String(s || "").replace(/[&<>"']/g, ch => ({
+  "&": "&amp;",
+  "<": "&lt;",
+  ">": "&gt;",
+  '"': "&quot;",
+  "'": "&#39;"
+}[ch]));
 
 let state = loadState();
 let focusIndex = 0;
@@ -247,13 +300,49 @@ function saveState() {
 function allWords() {
   return BUILTIN_WORDS.concat(state.customWords || []);
 }
+function normalizeWord(word, core = "") {
+  if (Array.isArray(word)) {
+    const [text, meaning, phonetic = "", example = ""] = word;
+    return { word: text, meaning, phonetic, example, core };
+  }
+  return { ...word, core: word.core || core };
+}
+function groupWords(group) {
+  return group.words.map(word => normalizeWord(word, group.core));
+}
+function customGroups() {
+  const words = state.customWords || [];
+  const groups = [];
+  for (let i = 0; i < words.length; i += 5) {
+    groups.push({ core: "自定义", words: words.slice(i, i + 5) });
+  }
+  return groups;
+}
+function allGroups() {
+  return WORD_GROUPS.concat(customGroups());
+}
 function dayNumber() {
   return Math.max(1, daysBetween(state.startDate, todayKey()) + 1);
 }
+function groupsForToday() {
+  const groups = allGroups();
+  const groupsPerDay = Math.max(1, Math.floor(WORDS_PER_DAY / 5));
+  const start = ((dayNumber() - 1) * groupsPerDay) % groups.length;
+  return Array.from({ length: groupsPerDay }, (_, i) => groups[(start + i) % groups.length]);
+}
+function baseWordsForToday() {
+  return groupsForToday().flatMap(group => groupWords(group));
+}
+function reviewWordsForToday(baseWords = baseWordsForToday()) {
+  const base = new Set(baseWords.map(w => clean(w.word)));
+  return Object.values(state.mistakes || {})
+    .filter(w => !base.has(clean(w.word)))
+    .slice(0, 3)
+    .map(w => ({ ...w, core: "错词复习", review: true }));
+}
 function wordsForToday() {
-  const bank = allWords();
-  const start = ((dayNumber() - 1) * WORDS_PER_DAY) % bank.length;
-  return Array.from({ length: WORDS_PER_DAY }, (_, i) => bank[(start + i) % bank.length]);
+  const base = baseWordsForToday();
+  return base.concat(reviewWordsForToday(base));
 }
 function markStudyDay() {
   const now = todayKey();
@@ -279,56 +368,137 @@ function toast(msg) {
   clearTimeout(window.__toastTimer);
   window.__toastTimer = setTimeout(() => $("toast").classList.remove("show"), 1800);
 }
-function speakWord(word) {
+function englishVoice() {
+  const voices = window.speechSynthesis.getVoices();
+  return voices.find(v => /^en[-_]/i.test(v.lang));
+}
+function buildUtterance(word, rate = 0.82) {
+  const utterance = new SpeechSynthesisUtterance(word);
+  const voice = englishVoice();
+  if (voice) utterance.voice = voice;
+  utterance.lang = voice ? voice.lang : "en-US";
+  utterance.rate = rate;
+  utterance.pitch = 1;
+  return utterance;
+}
+function speakWord(word, options = {}) {
   if (!("speechSynthesis" in window)) {
     toast("这个浏览器暂不支持语音");
     return;
   }
-  window.speechSynthesis.cancel();
-  const utterance = new SpeechSynthesisUtterance(word);
-  const voices = window.speechSynthesis.getVoices();
-  const englishVoice = voices.find(v => /^en[-_]/i.test(v.lang));
-  if (englishVoice) utterance.voice = englishVoice;
-  utterance.lang = englishVoice ? englishVoice.lang : "en-US";
-  utterance.rate = 0.82;
-  utterance.pitch = 1;
+  if (!options.keepQueue) window.speechSynthesis.cancel();
+  const utterance = buildUtterance(word, options.rate || 0.82);
   window.speechSynthesis.speak(utterance);
+}
+function speakTodayWords() {
+  if (!("speechSynthesis" in window)) {
+    toast("这个浏览器暂不支持语音");
+    return;
+  }
+  const words = wordsForToday().map(w => w.word);
+  let index = 0;
+  window.speechSynthesis.cancel();
+  const next = () => {
+    if (index >= words.length) return;
+    const utterance = buildUtterance(words[index], 0.78);
+    index += 1;
+    utterance.onend = () => setTimeout(next, 280);
+    window.speechSynthesis.speak(utterance);
+  };
+  next();
+  toast("开始连续朗读");
 }
 function render() {
   const todayWords = wordsForToday();
+  if (focusIndex >= todayWords.length) focusIndex = 0;
   const doneToday = todayWords.filter(w => state.done[doneKey(w.word)]).length;
   const totalDone = Object.keys(state.done).length;
   const d = new Date();
   $("dateText").textContent = `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日 · 打开自动更新`;
   $("dayNo").textContent = dayNumber();
-  $("todayCount").textContent = `${doneToday}/${WORDS_PER_DAY}`;
+  $("todayCount").textContent = `${doneToday}/${todayWords.length}`;
   $("streak").textContent = state.streak;
   $("totalDone").textContent = totalDone;
-  $("todayBar").style.width = `${doneToday / WORDS_PER_DAY * 100}%`;
+  $("todayBar").style.width = `${doneToday / todayWords.length * 100}%`;
+  const reviewCount = reviewWordsForToday().length;
+  $("newWordText").textContent = reviewCount ? `10 个新词 + ${reviewCount} 个复习` : "10 个新词";
+  $("coreStrip").innerHTML = groupsForToday().map(group => `
+    <div class="core-chip">
+      <b>${escapeHtml(group.core)}</b>
+      <span>${groupWords(group).length} 个相关词</span>
+    </div>
+  `).join("");
   renderFocus();
   renderWordList();
 }
 function renderFocus() {
-  const w = wordsForToday()[focusIndex];
+  const todayWords = wordsForToday();
+  const w = todayWords[focusIndex];
   $("focusWord").textContent = w.word;
   $("focusPhonetic").textContent = w.phonetic || "";
   $("focusMeaning").textContent = w.meaning;
   $("focusExample").textContent = w.example || "";
+  $("focusPosition").textContent = `${focusIndex + 1}/${todayWords.length}${w.review ? " · 复习" : ""}`;
   $("knownBtn").textContent = state.done[doneKey(w.word)] ? "已记住" : "记住了";
 }
 function renderWordList() {
-  $("wordList").innerHTML = wordsForToday().map((w, i) => {
-    const done = !!state.done[doneKey(w.word)];
-    return `<button class="card word-row" data-index="${i}">
-      <div><b>${w.word}</b><br><span>${w.meaning}</span></div>
-      <em class="tag ${done ? "done" : ""}">${done ? "已完成" : "待学习"}</em>
-    </button>`;
+  let index = 0;
+  const groupHtml = groupsForToday().map(group => {
+    const cards = groupWords(group).map(w => {
+      const i = index++;
+      const done = !!state.done[doneKey(w.word)];
+      return `<div class="card word-row" role="button" tabindex="0" data-index="${i}">
+        <div><b>${escapeHtml(w.word)}</b><br><span>${escapeHtml(w.meaning)}</span></div>
+        <div class="word-actions">
+          <button class="mini-speak" data-speak-index="${i}" aria-label="朗读 ${escapeHtml(w.word)}">
+            <svg viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4V5Z"></path><path d="M15 9.5a4 4 0 0 1 0 5"></path></svg>
+          </button>
+          <em class="tag ${done ? "done" : ""}">${done ? "已完成" : "待学习"}</em>
+        </div>
+      </div>`;
+    }).join("");
+    return `<section class="word-group">
+      <div class="group-title"><b>${escapeHtml(group.core)}</b><span>核心词组</span></div>
+      <div class="group-words">${cards}</div>
+    </section>`;
   }).join("");
+  const reviews = reviewWordsForToday();
+  const reviewHtml = reviews.length ? `<section class="word-group">
+    <div class="group-title"><b>错词复习</b><span>自动加入今天</span></div>
+    <div class="group-words">${reviews.map(w => {
+      const i = index++;
+      const done = !!state.done[doneKey(w.word)];
+      return `<div class="card word-row" role="button" tabindex="0" data-index="${i}">
+        <div><b>${escapeHtml(w.word)}</b><br><span>${escapeHtml(w.meaning)}</span></div>
+        <div class="word-actions">
+          <button class="mini-speak" data-speak-index="${i}" aria-label="朗读 ${escapeHtml(w.word)}">
+            <svg viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4V5Z"></path><path d="M15 9.5a4 4 0 0 1 0 5"></path></svg>
+          </button>
+          <em class="tag ${done ? "done" : "bad"}">${done ? "已完成" : "复习"}</em>
+        </div>
+      </div>`;
+    }).join("")}</div>
+  </section>` : "";
+  $("wordList").innerHTML = groupHtml + reviewHtml;
   document.querySelectorAll("#wordList .card").forEach(btn => {
-    btn.addEventListener("click", () => {
+    const openCard = () => {
       focusIndex = Number(btn.dataset.index);
       renderFocus();
       window.scrollTo({ top: 0, behavior: "smooth" });
+    };
+    btn.addEventListener("click", openCard);
+    btn.addEventListener("keydown", event => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        openCard();
+      }
+    });
+  });
+  document.querySelectorAll("#wordList .mini-speak").forEach(btn => {
+    btn.addEventListener("click", event => {
+      event.stopPropagation();
+      const w = wordsForToday()[Number(btn.dataset.speakIndex)];
+      speakWord(w.word);
     });
   });
 }
@@ -340,17 +510,19 @@ function startPractice() {
   $("feedback").textContent = "";
   $("feedback").className = "feedback";
   $("answerInput").value = "";
+  $("checkBtn").disabled = false;
   renderPractice();
 }
 function renderPractice() {
   const w = currentPracticeWord();
   const showHint = practice.round <= 7;
   $("roundText").textContent = `第 ${practice.round}/10 遍`;
+  $("practicePrompt").textContent = `第 ${practice.wordIndex + 1}/${practice.pool.length} 个。前 7 遍给你看单词，后 3 遍凭记忆。`;
   $("practiceHint").textContent = showHint ? w.word : "隐藏单词，凭记忆输入";
   $("practiceHint").classList.toggle("hidden", !showHint);
   $("practiceMeaning").textContent = w.meaning;
   $("practiceExample").textContent = w.example || "";
-  $("practiceBar").style.width = `${practice.done / (WORDS_PER_DAY * 10) * 100}%`;
+  $("practiceBar").style.width = `${practice.done / (practice.pool.length * 10) * 100}%`;
   $("answerInput").focus();
 }
 function nextPracticeWord() {
@@ -361,7 +533,7 @@ function nextPracticeWord() {
     practice.round += 1;
   }
   if (practice.round > 10) {
-    wordsForToday().forEach(w => state.done[doneKey(w.word)] = true);
+    practice.pool.forEach(w => state.done[doneKey(w.word)] = true);
     saveState();
     render();
     $("feedback").textContent = "今日拼写练习完成。";
@@ -392,13 +564,24 @@ function checkAnswer() {
 }
 function renderMistakes() {
   const list = Object.values(state.mistakes || {});
-  $("mistakeList").innerHTML = list.length ? list.map(w => `
+  $("mistakeList").innerHTML = list.length ? list.map((w, i) => `
     <div class="card">
-      <div class="word-row"><div><b>${w.word}</b><br><span>${w.phonetic || ""}</span></div><em class="tag bad">错词</em></div>
-      <div class="meaning" style="font-size:18px;margin-top:10px;">${w.meaning}</div>
-      <div class="example">${w.example || ""}</div>
+      <div class="word-row">
+        <div><b>${escapeHtml(w.word)}</b><br><span>${escapeHtml(w.phonetic || "")}</span></div>
+        <div class="word-actions">
+          <button class="mini-speak" data-mistake-index="${i}" aria-label="朗读 ${escapeHtml(w.word)}">
+            <svg viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4V5Z"></path><path d="M15 9.5a4 4 0 0 1 0 5"></path></svg>
+          </button>
+          <em class="tag bad">错词</em>
+        </div>
+      </div>
+      <div class="meaning" style="font-size:18px;margin-top:10px;">${escapeHtml(w.meaning)}</div>
+      <div class="example">${escapeHtml(w.example || "")}</div>
     </div>
   `).join("") : `<div class="empty">现在没有错词。</div>`;
+  document.querySelectorAll("#mistakeList .mini-speak").forEach(btn => {
+    btn.addEventListener("click", () => speakWord(list[Number(btn.dataset.mistakeIndex)].word));
+  });
 }
 function importWords() {
   const lines = $("importBox").value.split(/\n+/).map(s => s.trim()).filter(Boolean);
@@ -433,8 +616,16 @@ function resetAll() {
 }
 
 document.querySelectorAll(".tab").forEach(tab => tab.addEventListener("click", () => setView(tab.dataset.tab)));
-$("prevBtn").addEventListener("click", () => { focusIndex = (focusIndex + WORDS_PER_DAY - 1) % WORDS_PER_DAY; renderFocus(); });
-$("nextBtn").addEventListener("click", () => { focusIndex = (focusIndex + 1) % WORDS_PER_DAY; renderFocus(); });
+$("prevBtn").addEventListener("click", () => {
+  const count = wordsForToday().length;
+  focusIndex = (focusIndex + count - 1) % count;
+  renderFocus();
+});
+$("nextBtn").addEventListener("click", () => {
+  const count = wordsForToday().length;
+  focusIndex = (focusIndex + 1) % count;
+  renderFocus();
+});
 $("knownBtn").addEventListener("click", () => {
   const w = wordsForToday()[focusIndex];
   state.done[doneKey(w.word)] = true;
@@ -444,6 +635,7 @@ $("knownBtn").addEventListener("click", () => {
   toast("已记录");
 });
 $("speakFocusBtn").addEventListener("click", () => speakWord(wordsForToday()[focusIndex].word));
+$("speakAllBtn").addEventListener("click", speakTodayWords);
 $("speakPracticeBtn").addEventListener("click", () => speakWord(currentPracticeWord().word));
 $("checkBtn").addEventListener("click", checkAnswer);
 $("skipBtn").addEventListener("click", nextPracticeWord);
