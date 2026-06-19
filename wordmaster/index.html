@@ -637,7 +637,16 @@ textarea {
     <div class="settings">
       <div class="card">
         <div class="section-head"><h2>自动更新规则</h2></div>
-        <p class="note">你不用每天更新文件。这个 App 会记住第一次开始学习的日期，之后每次打开时按手机日期自动切换当天单词。比如今天是第 1 天，明天打开就是第 2 天。</p>
+        <p class="note">你不用每天更新文件。这个 App 会把学习日保存在当前手机里，刷新、关闭再打开都不会重置。朋友第一次用时，可以把“今天是第几天”设为 1。</p>
+        <div class="row" style="margin-top:12px;">
+          <input id="learningDayInput" type="number" min="1" step="1" inputmode="numeric" aria-label="今天是第几天">
+          <button class="btn blue" id="setLearningDayBtn">保存学习日</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="section-head"><h2>分享给朋友</h2></div>
+        <p class="note">把链接发给朋友后，他们的进度、错词和自定义词库都会保存在自己的手机里，不会同步你的记录。如果朋友以前打开过，可以把学习日设为 1，或点“清空记录”。</p>
+        <button class="btn blue" id="shareLinkBtn" style="width:100%; margin-top:10px;">复制分享链接</button>
       </div>
       <div class="card">
         <div class="section-head"><h2>添加自己的单词</h2></div>
@@ -692,18 +701,23 @@ BUILTIN_WORDS = WORD_GROUPS.flatMap(group => group.words)
 
 
 const $ = (id) => document.getElementById(id);
-const todayKey = () => {
-  const d = new Date();
+const dateKeyFromDate = (d) => {
   const y = d.getFullYear();
   const m = String(d.getMonth() + 1).padStart(2, "0");
   const day = String(d.getDate()).padStart(2, "0");
   return `${y}-${m}-${day}`;
 };
+const todayKey = () => dateKeyFromDate(new Date());
 const toDate = (key) => {
   const [y, m, d] = key.split("-").map(Number);
   return new Date(y, m - 1, d);
 };
 const daysBetween = (a, b) => Math.floor((toDate(b) - toDate(a)) / 86400000);
+const startDateForLearningDay = (day) => {
+  const d = new Date();
+  d.setDate(d.getDate() - Math.max(0, day - 1));
+  return dateKeyFromDate(d);
+};
 const clean = (s) => String(s || "").trim().toLowerCase().replace(/\s+/g, " ");
 const escapeHtml = (s) => String(s || "").replace(/[&<>"']/g, ch => ({
   "&": "&amp;",
@@ -1324,6 +1338,7 @@ function render() {
   const d = new Date();
   $("dateText").textContent = `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日 · 打开自动更新`;
   $("dayNo").textContent = dayNumber();
+  $("learningDayInput").value = dayNumber();
   $("todayCount").textContent = `${doneToday}/${todayWords.length}`;
   $("streak").textContent = state.streak;
   $("totalDone").textContent = totalDone;
@@ -1532,7 +1547,26 @@ function resetStart() {
   focusIndex = 0;
   saveState();
   render();
-  toast("已从今天重新开始");
+  toast("今天已设为第 1 天");
+}
+function setLearningDay() {
+  const value = Number($("learningDayInput").value);
+  if (!Number.isFinite(value) || value < 1) return toast("请输入大于 0 的天数");
+  const nextDay = Math.floor(value);
+  state.startDate = startDateForLearningDay(nextDay);
+  focusIndex = 0;
+  saveState();
+  render();
+  toast(`今天已设为第 ${nextDay} 天`);
+}
+function shareLink() {
+  const url = `${location.origin}${location.pathname}`;
+  const done = () => toast("分享链接已复制");
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(url).then(done).catch(() => prompt("复制这个链接发给朋友", url));
+    return;
+  }
+  prompt("复制这个链接发给朋友", url);
 }
 function resetAll() {
   if (!confirm("确定要清空所有学习记录吗？")) return;
@@ -1581,6 +1615,8 @@ $("answerInput").addEventListener("input", clearAnswerMood);
 $("answerInput").addEventListener("keydown", e => { if (e.key === "Enter") checkAnswer(); });
 $("clearMistakes").addEventListener("click", () => { state.mistakes = {}; saveState(); renderMistakes(); toast("错词已清空"); });
 $("importBtn").addEventListener("click", importWords);
+$("setLearningDayBtn").addEventListener("click", setLearningDay);
+$("shareLinkBtn").addEventListener("click", shareLink);
 $("resetStartBtn").addEventListener("click", resetStart);
 $("resetAllBtn").addEventListener("click", resetAll);
 
