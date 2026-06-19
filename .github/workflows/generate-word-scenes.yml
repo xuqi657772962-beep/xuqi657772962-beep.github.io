@@ -33,7 +33,7 @@ jobs:
 
       - name: Commit generated scenes
         run: |
-          if git diff --quiet -- wordmaster/scenes; then
+          if [ -z "$(git status --porcelain -- wordmaster/scenes)" ]; then
             echo "No generated scene changes."
             exit 0
           fi
