@@ -11,11 +11,11 @@ const MANIFEST_FILE = path.join(SCENES_DIR, "manifest.json");
 const WORDS_PER_DAY = 10;
 const GROUP_SIZE = 5;
 const GROUPS_PER_DAY = Math.max(1, Math.floor(WORDS_PER_DAY / GROUP_SIZE));
-const MODEL = process.env.REPLICATE_MODEL || "black-forest-labs/flux-schnell";
+const MODEL = process.env.OPENROUTER_IMAGE_MODEL || "black-forest-labs/flux.2-klein-4b";
 const START_DATE = process.env.WORDMASTER_SCENE_START_DATE || "2026-06-01";
 const DAYS_AHEAD = Number(process.env.WORDMASTER_SCENE_DAYS_AHEAD || 10);
 const MAX_GENERATIONS = Number(process.env.WORDMASTER_SCENE_MAX_GENERATIONS || 120);
-const API_TOKEN = process.env.REPLICATE_API_TOKEN || "";
+const API_TOKEN = process.env.OPENROUTER_API_KEY || "";
 
 function todayKey() {
   const d = new Date();
@@ -104,46 +104,57 @@ async function readManifest() {
   return JSON.parse(await readFile(MANIFEST_FILE, "utf8"));
 }
 
-async function createPrediction(prompt, seed) {
-  const response = await fetch(`https://api.replicate.com/v1/models/${MODEL}/predictions`, {
+function imageBufferFromDataUrl(dataUrl) {
+  const match = String(dataUrl).match(/^data:([^;]+);base64,(.+)$/);
+  if (!match) return null;
+  return {
+    mimeType: match[1],
+    bytes: Buffer.from(match[2], "base64")
+  };
+}
+
+async function createImage(prompt, seed) {
+  const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
     method: "POST",
     headers: {
       Authorization: `Bearer ${API_TOKEN}`,
       "Content-Type": "application/json",
-      Prefer: "wait"
+      "HTTP-Referer": "https://xuqi657772962-beep.github.io/wordmaster/",
+      "X-Title": "Wordmaster Daily Scenes"
     },
     body: JSON.stringify({
-      input: {
-        prompt,
+      model: MODEL,
+      messages: [
+        {
+          role: "user",
+          content: `${prompt}\nSeed: ${seed}.`
+        }
+      ],
+      modalities: ["image"],
+      image_config: {
         aspect_ratio: "9:16",
-        output_format: "webp",
-        output_quality: 82,
-        num_outputs: 1,
-        seed
+        image_size: "1K"
       }
     })
   });
   if (!response.ok) {
     const text = await response.text();
-    throw new Error(`Replicate create failed: ${response.status} ${text.slice(0, 500)}`);
+    throw new Error(`OpenRouter image generation failed: ${response.status} ${text.slice(0, 500)}`);
   }
-  let prediction = await response.json();
-  const getUrl = prediction.urls?.get;
-  for (let i = 0; getUrl && !["succeeded", "failed", "canceled"].includes(prediction.status) && i < 30; i += 1) {
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    const poll = await fetch(getUrl, { headers: { Authorization: `Bearer ${API_TOKEN}` } });
-    if (!poll.ok) throw new Error(`Replicate poll failed: ${poll.status}`);
-    prediction = await poll.json();
-  }
-  if (prediction.status !== "succeeded") {
-    throw new Error(`Replicate prediction did not succeed: ${prediction.status}`);
-  }
-  const output = Array.isArray(prediction.output) ? prediction.output[0] : prediction.output;
-  if (!output) throw new Error("Replicate returned no output image");
-  return output;
+  const result = await response.json();
+  const message = result.choices?.[0]?.message;
+  const image = message?.images?.[0];
+  const url = image?.image_url?.url || image?.imageUrl?.url || image?.url;
+  if (!url) throw new Error(`OpenRouter returned no image output: ${JSON.stringify(result).slice(0, 500)}`);
+  return url;
 }
 
 async function downloadImage(url, target) {
+  const data = imageBufferFromDataUrl(url);
+  if (data) {
+    await writeFile(target, data.bytes);
+    return;
+  }
   const response = await fetch(url);
   if (!response.ok) throw new Error(`Image download failed: ${response.status}`);
   const bytes = Buffer.from(await response.arrayBuffer());
@@ -152,7 +163,7 @@ async function downloadImage(url, target) {
 
 async function main() {
   if (!API_TOKEN) {
-    console.log("REPLICATE_API_TOKEN is not configured. Skipping scene generation.");
+    console.log("OPENROUTER_API_KEY is not configured. Skipping scene generation.");
     return;
   }
 
@@ -188,7 +199,7 @@ async function main() {
 
     const prompt = scenePrompt(word);
     console.log(`Generating ${word.word} -> ${filename}`);
-    const outputUrl = await createPrediction(prompt, hashScene(`${word.word}-${word.meaning}`));
+    const outputUrl = await createImage(prompt, hashScene(`${word.word}-${word.meaning}`));
     await downloadImage(outputUrl, target);
     manifest.images[key] = {
       src: `scenes/${filename}`,
