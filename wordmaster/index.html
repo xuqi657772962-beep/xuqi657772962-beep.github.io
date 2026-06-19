@@ -55,22 +55,32 @@ body::before {
   opacity: .52;
   z-index: 0;
 }
+body.has-scene-photo::before {
+  opacity: 0;
+}
 body::after {
   content: "";
   position: fixed;
   inset: 0;
   pointer-events: none;
   background:
-    linear-gradient(180deg, rgba(255,255,255,.03) 0%, transparent 38%, rgba(3,5,4,.42) 100%),
-    radial-gradient(circle at 50% 34%, transparent 0%, rgba(0,0,0,.05) 52%, rgba(0,0,0,.22) 100%);
+    linear-gradient(180deg, rgba(255,255,255,.04) 0%, transparent 42%, rgba(3,5,4,.2) 100%),
+    radial-gradient(circle at 50% 34%, transparent 0%, rgba(0,0,0,.02) 56%, rgba(0,0,0,.12) 100%);
   z-index: 0;
 }
 .scene-backdrop {
   position: fixed;
-  inset: 0;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 100vh;
+  height: 100lvh;
+  min-height: 100vh;
   pointer-events: none;
   overflow: hidden;
   z-index: 0;
+  contain: paint;
+  transform: translateZ(0);
   --scene-a: rgba(234,193,122,.2);
   --scene-b: rgba(142,240,184,.14);
   --scene-c: rgba(155,220,234,.1);
@@ -100,30 +110,33 @@ body::after {
   background: radial-gradient(circle at 58% 50%, var(--scene-b), transparent 64%), radial-gradient(circle at 34% 70%, var(--scene-c), transparent 58%);
   animation: sceneDrift 8s ease-in-out infinite alternate;
 }
+body.has-scene-photo .scene-backdrop::before,
+body.has-scene-photo .scene-backdrop::after {
+  opacity: 0;
+  animation: none;
+}
 .scene-photo {
   position: absolute;
-  inset: -7%;
+  inset: 0;
   background-size: cover;
   background-position: center;
   opacity: 0;
-  transform: scale(1.06);
-  transition: opacity .72s ease, transform 1.1s ease;
-  filter: brightness(.72) contrast(1.08) saturate(1.12);
-  will-change: opacity, transform;
+  transform: translateZ(0);
+  transition: opacity .42s ease;
+  filter: brightness(1.02) contrast(1.04) saturate(1.12);
+  backface-visibility: hidden;
 }
 .scene-photo::after {
   content: "";
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(180deg, rgba(3,5,4,.12) 0%, rgba(3,5,4,.24) 42%, rgba(3,5,4,.78) 100%),
-    radial-gradient(circle at 50% 36%, rgba(255,255,255,.08), transparent 28%),
-    radial-gradient(circle at 52% 44%, transparent 0%, rgba(0,0,0,.22) 70%, rgba(0,0,0,.44) 100%);
+    linear-gradient(180deg, rgba(3,5,4,.02) 0%, rgba(3,5,4,.06) 46%, rgba(3,5,4,.28) 100%),
+    radial-gradient(circle at 50% 36%, rgba(255,255,255,.06), transparent 30%),
+    radial-gradient(circle at 52% 44%, transparent 0%, rgba(0,0,0,.08) 78%, rgba(0,0,0,.18) 100%);
 }
 .scene-photo.is-live {
-  opacity: .92;
-  transform: scale(1.02);
-  animation: photoDrift 18s ease-in-out infinite alternate;
+  opacity: 1;
 }
 .scene-art {
   display: none;
@@ -136,6 +149,10 @@ body::after {
   opacity: .52;
   filter: saturate(1.2) contrast(1.08);
   mix-blend-mode: screen;
+  transition: opacity .2s ease;
+}
+body.has-scene-photo .scene-canvas {
+  opacity: 0;
 }
 .scene-backdrop[data-scene="time"] { --scene-a: rgba(234,193,122,.26); --scene-b: rgba(155,220,234,.14); --scene-c: rgba(255,255,255,.08); }
 .scene-backdrop[data-scene="work"] { --scene-a: rgba(155,220,234,.22); --scene-b: rgba(142,240,184,.12); --scene-c: rgba(234,193,122,.1); }
@@ -343,22 +360,22 @@ input:focus, textarea:focus { border-color: rgba(85,214,255,.72); box-shadow: 0 
 .core-chip,
 .stat,
 .pill {
-  background: linear-gradient(145deg, rgba(255,255,255,.13), rgba(255,255,255,.045));
-  border: 1px solid rgba(255,255,255,.18);
-  box-shadow: 0 22px 56px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.16);
-  backdrop-filter: blur(15px) saturate(145%);
-  -webkit-backdrop-filter: blur(15px) saturate(145%);
+  background: linear-gradient(145deg, rgba(255,255,255,.105), rgba(255,255,255,.028));
+  border: 1px solid rgba(255,255,255,.16);
+  box-shadow: 0 18px 48px rgba(0,0,0,.24), inset 0 1px 0 rgba(255,255,255,.14);
+  backdrop-filter: blur(9px) saturate(125%);
+  -webkit-backdrop-filter: blur(9px) saturate(125%);
 }
 .mission-card {
   background:
-    linear-gradient(135deg, rgba(255,255,255,.14), rgba(255,255,255,.05) 45%, rgba(142,240,184,.055)),
-    rgba(8, 13, 10, .26);
+    linear-gradient(135deg, rgba(255,255,255,.1), rgba(255,255,255,.03) 45%, rgba(142,240,184,.045)),
+    rgba(8, 13, 10, .14);
 }
 .today,
 .practice {
   background:
-    linear-gradient(145deg, rgba(255,255,255,.12), rgba(255,255,255,.04)),
-    rgba(7, 10, 9, .3);
+    linear-gradient(145deg, rgba(255,255,255,.095), rgba(255,255,255,.026)),
+    rgba(7, 10, 9, .18);
 }
 .mission-card::after {
   background: linear-gradient(90deg, transparent, rgba(234,193,122,.72), rgba(142,240,184,.58), transparent);
@@ -816,10 +833,12 @@ function updateScenePhoto(word, kind) {
     next.style.backgroundImage = `url("${url}")`;
     next.classList.add("is-live");
     current.classList.remove("is-live");
+    document.body.classList.add("has-scene-photo");
     scenePhotoActive = nextName;
   };
   image.onerror = () => {
     next.style.backgroundImage = "";
+    document.body.classList.remove("has-scene-photo");
   };
   image.src = url;
 }
@@ -841,17 +860,31 @@ function setupSceneCanvas() {
   const canvas = $("sceneCanvas");
   const ctx = canvas.getContext("2d");
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
-  const resize = () => {
-    canvas.width = Math.floor(window.innerWidth * dpr);
-    canvas.height = Math.floor(window.innerHeight * dpr);
-    canvas.style.width = `${window.innerWidth}px`;
-    canvas.style.height = `${window.innerHeight}px`;
+  let canvasWidth = 0;
+  let canvasHeight = 0;
+  let resizeTimer = 0;
+  const applySize = () => {
+    const width = Math.max(document.documentElement.clientWidth || window.innerWidth, window.innerWidth);
+    const height = Math.max(window.innerHeight, Math.ceil(window.screen && window.screen.height ? window.screen.height : window.innerHeight));
+    if (Math.abs(width - canvasWidth) < 2 && Math.abs(height - canvasHeight) < 80) return;
+    canvasWidth = width;
+    canvasHeight = height;
+    canvas.width = Math.floor(canvasWidth * dpr);
+    canvas.height = Math.floor(canvasHeight * dpr);
+    canvas.style.width = `${canvasWidth}px`;
+    canvas.style.height = `${canvasHeight}px`;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   };
+  const resize = () => {
+    window.clearTimeout(resizeTimer);
+    resizeTimer = window.setTimeout(applySize, 180);
+  };
   window.addEventListener("resize", resize, { passive: true });
-  resize();
+  applySize();
   const loop = (time) => {
-    drawScene(ctx, window.innerWidth, window.innerHeight, time / 1000);
+    if (!document.body.classList.contains("has-scene-photo")) {
+      drawScene(ctx, canvasWidth || window.innerWidth, canvasHeight || window.innerHeight, time / 1000);
+    }
     requestAnimationFrame(loop);
   };
   requestAnimationFrame(loop);
