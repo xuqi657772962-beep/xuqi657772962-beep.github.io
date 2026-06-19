@@ -288,6 +288,12 @@ body:not([data-view="learn"]) .stats { display: none; }
 .phonetic { color: var(--blue); font-size: 15px; margin-bottom: 10px; }
 .meaning { color: var(--ink); font-size: 20px; line-height: 1.32; margin-bottom: 10px; }
 .example { color: var(--muted); font-size: 14px; line-height: 1.55; border-left: 3px solid rgba(85,214,255,.5); padding-left: 10px; }
+.usage-card { margin-top: 12px; border: 1px solid rgba(255,255,255,.13); border-radius: 18px; padding: 11px; background: rgba(0,0,0,.16); }
+.usage-label { color: var(--gold); font-size: 11px; font-weight: 850; letter-spacing: .14em; margin-bottom: 8px; }
+.usage-tags { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 8px; }
+.usage-tags span { max-width: 100%; border-radius: 999px; padding: 5px 9px; background: rgba(155,220,234,.1); border: 1px solid rgba(155,220,234,.2); color: var(--ink); font-size: 12px; font-weight: 760; }
+.usage-scene { color: var(--muted); font-size: 13px; line-height: 1.55; }
+.word-usage { display: block; margin-top: 6px; color: rgba(244,239,229,.72); font-size: 12px; line-height: 1.35; }
 .row { display: flex; gap: 10px; align-items: center; }
 .row > * { flex: 1; }
 .btn { min-height: 48px; border-radius: 16px; background: var(--panel-2); border: 1px solid var(--line); padding: 10px 13px; font-weight: 760; box-shadow: inset 0 1px 0 rgba(255,255,255,.07); transition: transform .16s ease, border-color .16s ease, background .16s ease; }
@@ -581,6 +587,7 @@ textarea {
       </div>
       <div class="meaning" id="focusMeaning"></div>
       <div class="example" id="focusExample"></div>
+      <div class="usage-card" id="focusUsage"></div>
       <div class="bar"><i id="todayBar"></i></div>
       <div class="row" style="margin-top:14px;">
         <button class="btn" id="prevBtn">上一个</button>
@@ -612,6 +619,7 @@ textarea {
       <button class="btn speak" id="speakPracticeBtn" style="width:100%; margin: 0 0 12px;">朗读当前单词</button>
       <div class="meaning" id="practiceMeaning"></div>
       <div class="example" id="practiceExample"></div>
+      <div class="usage-card" id="practiceUsage"></div>
       <div class="answer-wrap" id="answerWrap">
         <input id="answerInput" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="输入英文单词">
         <span class="reaction" id="reactionMark" aria-hidden="true"></span>
@@ -1146,6 +1154,86 @@ function customGroups() {
 function allGroups() {
   return WORD_GROUPS.concat(customGroups());
 }
+const CORE_USAGE = {
+  time: { scene: "安排时间、作息、日程时常用。", frame: "I need time to study.", phrases: ["spend time", "save time", "on time", "free time"] },
+  people: { scene: "描述人群、社交、照顾别人时常用。", frame: "Many people use this every day.", phrases: ["many people", "young people", "meet people", "help people"] },
+  work: { scene: "工作、学习任务、团队协作时常用。", frame: "I have work to do.", phrases: ["go to work", "hard work", "work with", "finish work"] },
+  day: { scene: "日期、日常安排、祝福问候时常用。", frame: "Today is a busy day.", phrases: ["every day", "one day", "all day", "good day"] },
+  life: { scene: "谈生活方式、人生经历、日常习惯时常用。", frame: "This is part of daily life.", phrases: ["daily life", "healthy life", "real life", "life skill"] },
+  world: { scene: "谈世界、国际范围、现实应用时常用。", frame: "English is used around the world.", phrases: ["around the world", "real-world", "worldwide", "world-class"] },
+  home: { scene: "回家、家庭生活、个人空间时常用。", frame: "I go home after work.", phrases: ["go home", "at home", "home life", "home town"] },
+  game: { scene: "游戏、比赛、计划和策略时常用。", frame: "This game is fun.", phrases: ["play a game", "video game", "game plan", "win the game"] },
+  school: { scene: "学校、课堂、作业、课后活动时常用。", frame: "School starts at eight.", phrases: ["go to school", "at school", "school work", "after school"] },
+  house: { scene: "房屋、家庭空间、家务时常用。", frame: "This house is old.", phrases: ["a big house", "house work", "around the house", "farm house"] },
+  family: { scene: "介绍家人、家庭关系、家庭生活时常用。", frame: "Family is important.", phrases: ["family member", "family name", "family life", "host family"] },
+  money: { scene: "付款、存钱、退款、消费时常用。", frame: "Save your money.", phrases: ["save money", "spend money", "money back", "pocket money"] },
+  name: { scene: "注册账号、填写资料、介绍身份时常用。", frame: "Write your name here.", phrases: ["full name", "user name", "file name", "name tag"] },
+  city: { scene: "城市生活、地点、公共服务时常用。", frame: "The city is busy.", phrases: ["city center", "city life", "city hall", "big city"] },
+  water: { scene: "喝水、户外、物品防水时常用。", frame: "Drink more water.", phrases: ["drink water", "water bottle", "clean water", "waterproof"] },
+  music: { scene: "听歌、上课、视频和播放器时常用。", frame: "Music helps me relax.", phrases: ["listen to music", "music class", "music video", "music player"] },
+  head: { scene: "身体不适、标题、负责人、耳机时常用。", frame: "My head hurts.", phrases: ["head teacher", "headache", "headline", "headphone"] },
+  job: { scene: "找工作、面试、兼职全职时常用。", frame: "She found a new job.", phrases: ["get a job", "job interview", "job offer", "part-time job"] },
+  country: { scene: "谈国家、家乡、乡村和音乐类型时常用。", frame: "Which country are you from?", phrases: ["home country", "country music", "in the country", "countrywide"] },
+  story: { scene: "讲故事、读书、电影情节时常用。", frame: "Tell me a story.", phrases: ["tell a story", "short story", "story book", "bedtime story"] },
+  car: { scene: "交通、停车、洗车、拼车时常用。", frame: "The car is red.", phrases: ["drive a car", "car park", "car wash", "by car"] },
+  health: { scene: "健康、医疗、保险、心理状态时常用。", frame: "Health is important.", phrases: ["good health", "mental health", "health check", "health insurance"] },
+  book: { scene: "阅读、课堂、笔记和练习时常用。", frame: "This book is useful.", phrases: ["read a book", "textbook", "notebook", "workbook"] },
+  hand: { scene: "动作、手写、手工、二手物品时常用。", frame: "Raise your hand.", phrases: ["by hand", "handmade", "handbook", "secondhand"] },
+  food: { scene: "点餐、健康饮食、食品安全时常用。", frame: "This food is fresh.", phrases: ["fast food", "seafood", "food court", "food safety"] },
+  body: { scene: "身体、健康、动作和肢体语言时常用。", frame: "Exercise your body.", phrases: ["body language", "body weight", "whole body", "everybody"] },
+  room: { scene: "家里、学校、生活空间时常用。", frame: "This room is clean.", phrases: ["living room", "bedroom", "classroom", "bathroom"] },
+  friend: { scene: "社交、同伴、信任关系时常用。", frame: "My friend studies with me.", phrases: ["best friend", "make friends", "friend request", "friendly"] },
+  phone: { scene: "打电话、手机、联系方式时常用。", frame: "My phone is on the desk.", phrases: ["phone call", "phone number", "smartphone", "on the phone"] },
+  child: { scene: "孩子、童年、照看儿童时常用。", frame: "The child is reading.", phrases: ["young child", "child care", "childhood", "schoolchild"] },
+  word: { scene: "背单词、阅读句子、账号密码时常用。", frame: "Write this word three times.", phrases: ["new word", "key word", "word list", "word meaning"] },
+  road: { scene: "出行、开车、路标和旅程时常用。", frame: "The road is long.", phrases: ["on the road", "road trip", "road sign", "roadside"] },
+  movie: { scene: "看电影、买票、影院活动时常用。", frame: "This movie is funny.", phrases: ["watch a movie", "movie theater", "movie ticket", "movie night"] },
+  language: { scene: "学习语言、表达方式、交流时常用。", frame: "English is a useful language.", phrases: ["learn a language", "body language", "sign language", "language school"] },
+  internet: { scene: "上网、连接、账号安全时常用。", frame: "The internet is useful.", phrases: ["use the internet", "internet access", "internet connection", "internet user"] },
+  eye: { scene: "视力、注意力、眼神交流时常用。", frame: "Protect your eyes.", phrases: ["eye contact", "eye drops", "good eyesight", "open your eyes"] },
+  student: { scene: "课堂、校园、学生身份时常用。", frame: "The student asked a question.", phrases: ["student card", "student life", "exchange student", "student ID"] },
+  computer: { scene: "学习、办公、屏幕和计算机课程时常用。", frame: "Use the computer to study.", phrases: ["use a computer", "computer screen", "computer science", "computer room"] },
+  teacher: { scene: "课堂、培训、学校人员时常用。", frame: "The teacher is kind.", phrases: ["English teacher", "head teacher", "teacher training", "teacher desk"] },
+  parent: { scene: "家庭、学校沟通、照顾孩子时常用。", frame: "A parent came to school.", phrases: ["parent meeting", "single parent", "grandparent", "parenting"] },
+  "自定义": { scene: "这是你自己添加的词，建议放进真实句子里记。", frame: "I can use this word in a real sentence.", phrases: ["real sentence", "daily use", "common phrase", "review often"] },
+  "错词复习": { scene: "这是之前写错的词，优先看搭配和例句。", frame: "I will remember this word today.", phrases: ["review again", "common phrase", "real sentence", "say it aloud"] }
+};
+function relatedWordsForCore(core, word) {
+  const group = allGroups().find(item => item.core === core);
+  if (!group) return [];
+  return groupWords(group).map(item => item.word).filter(item => clean(item) !== clean(word));
+}
+function phraseFromExample(word) {
+  if (!word.example) return "";
+  const tokens = String(word.example).replace(/[^\w\s-]/g, "").split(/\s+/).filter(Boolean);
+  const target = clean(word.word).split(" ");
+  const lower = tokens.map(item => clean(item));
+  const index = lower.findIndex((_, i) => target.every((part, offset) => lower[i + offset] === part));
+  if (index < 0) return "";
+  const start = Math.max(0, index - 2);
+  const end = Math.min(tokens.length, index + target.length + 2);
+  return tokens.slice(start, end).join(" ");
+}
+function usageGuide(word) {
+  const core = word.core || "自定义";
+  const preset = CORE_USAGE[core] || CORE_USAGE["自定义"];
+  const ownPhrase = word.word.includes(" ") ? [word.word] : [];
+  const examplePhrase = phraseFromExample(word);
+  const phrases = [...new Set([examplePhrase].concat(ownPhrase, preset.phrases, relatedWordsForCore(core, word.word).slice(0, 2)))]
+    .filter(Boolean)
+    .slice(0, 4);
+  return { phrases, scene: preset.scene, frame: preset.frame };
+}
+function usageHtml(word, compact = false) {
+  const guide = usageGuide(word);
+  const tags = guide.phrases.map(item => `<span>${escapeHtml(item)}</span>`).join("");
+  if (compact) return `<span class="word-usage">常见：${guide.phrases.slice(0, 3).map(escapeHtml).join(" · ")}</span>`;
+  return `
+    <div class="usage-label">常见搭配</div>
+    <div class="usage-tags">${tags}</div>
+    <div class="usage-scene">场景：${escapeHtml(guide.scene)} 常见句子：${escapeHtml(guide.frame)}</div>
+  `;
+}
 function dayNumber() {
   return Math.max(1, daysBetween(state.startDate, todayKey()) + 1);
 }
@@ -1370,6 +1458,7 @@ function renderFocus() {
   $("focusPhonetic").textContent = w.phonetic || "";
   $("focusMeaning").textContent = w.meaning;
   $("focusExample").textContent = w.example || "";
+  $("focusUsage").innerHTML = usageHtml(w);
   $("focusPosition").textContent = `${focusIndex + 1}/${todayWords.length}${w.review ? " · 复习" : ""}`;
   $("knownBtn").textContent = state.done[doneKey(w.word)] ? "已记住" : "记住了";
   document.querySelector(".today").classList.toggle("is-done", !!state.done[doneKey(w.word)]);
@@ -1383,7 +1472,7 @@ function renderWordList() {
       const i = index++;
       const done = !!state.done[doneKey(w.word)];
       return `<div class="card word-row" role="button" tabindex="0" data-index="${i}">
-        <div><b>${escapeHtml(w.word)}</b><br><span>${escapeHtml(w.meaning)}</span></div>
+        <div><b>${escapeHtml(w.word)}</b><br><span>${escapeHtml(w.meaning)}</span>${usageHtml(w, true)}</div>
         <div class="word-actions">
           <button class="mini-speak" data-speak-index="${i}" aria-label="朗读 ${escapeHtml(w.word)}">
             <svg viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4V5Z"></path><path d="M15 9.5a4 4 0 0 1 0 5"></path></svg>
@@ -1404,7 +1493,7 @@ function renderWordList() {
       const i = index++;
       const done = !!state.done[doneKey(w.word)];
       return `<div class="card word-row" role="button" tabindex="0" data-index="${i}">
-        <div><b>${escapeHtml(w.word)}</b><br><span>${escapeHtml(w.meaning)}</span></div>
+        <div><b>${escapeHtml(w.word)}</b><br><span>${escapeHtml(w.meaning)}</span>${usageHtml(w, true)}</div>
         <div class="word-actions">
           <button class="mini-speak" data-speak-index="${i}" aria-label="朗读 ${escapeHtml(w.word)}">
             <svg viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4V5Z"></path><path d="M15 9.5a4 4 0 0 1 0 5"></path></svg>
@@ -1458,6 +1547,7 @@ function renderPractice() {
   replayClass($("practiceHint"), "reveal");
   $("practiceMeaning").textContent = w.meaning;
   $("practiceExample").textContent = w.example || "";
+  $("practiceUsage").innerHTML = usageHtml(w);
   $("practiceBar").style.width = `${practice.done / (practice.pool.length * 10) * 100}%`;
   updateScene(w);
   $("answerInput").focus();
@@ -1521,6 +1611,7 @@ function renderMistakes() {
       </div>
       <div class="meaning" style="font-size:18px;margin-top:10px;">${escapeHtml(w.meaning)}</div>
       <div class="example">${escapeHtml(w.example || "")}</div>
+      <div class="usage-card">${usageHtml(w)}</div>
     </div>
   `).join("") : `<div class="empty">现在没有错词。</div>`;
   document.querySelectorAll("#mistakeList .mini-speak").forEach(btn => {
