@@ -20,6 +20,7 @@
   --green: #3df3a3;
   --blue: #55d6ff;
   --gold: #f5b64e;
+  --peach: #ffcf91;
   --rose: #ff5c8a;
   --red: #ff6d64;
   --shadow: 0 24px 70px rgba(0, 0, 0, .38);
@@ -30,8 +31,9 @@ html { background: #10100d; }
 body {
   padding: env(safe-area-inset-top) 0 calc(88px + env(safe-area-inset-bottom));
   background:
+    radial-gradient(120% 80% at 20% 0%, rgba(245,182,78,.18), transparent 46%),
     linear-gradient(135deg, rgba(61,243,163,.14), transparent 28%),
-    linear-gradient(225deg, rgba(255,92,138,.13), transparent 32%),
+    linear-gradient(225deg, rgba(255,92,138,.1), transparent 32%),
     linear-gradient(180deg, #16140f 0%, #10100d 46%, #121713 100%);
   position: relative;
 }
@@ -129,11 +131,13 @@ body:not([data-view="learn"]) .stats { display: none; }
 .core-chip span { display: block; color: var(--muted); font-size: 12px; margin-top: 9px; }
 .today { background: linear-gradient(180deg, rgba(255,255,255,.1), rgba(255,255,255,.045)); border: 1px solid rgba(255,255,255,.15); border-radius: 26px; padding: 16px; margin-bottom: 16px; box-shadow: var(--shadow), inset 0 1px 0 rgba(255,255,255,.08); }
 .today.is-done { border-color: rgba(61,243,163,.42); box-shadow: 0 0 42px rgba(61,243,163,.12), var(--shadow); }
+.today.flash-ok { animation: cardGlow .62s ease; }
 .section-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
 .section-head h2 { margin: 0; color: var(--ink); font-size: 17px; letter-spacing: 0; }
 .small { color: var(--muted); font-size: 12px; }
 .focus-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
 .word-main { color: var(--ink); font-size: 44px; font-weight: 900; line-height: .98; margin: 10px 0 8px; word-break: break-word; text-shadow: 0 0 34px rgba(85,214,255,.22); }
+.word-main.word-pop { animation: wordPop .34s cubic-bezier(.2, .8, .2, 1); }
 .phonetic { color: var(--blue); font-size: 15px; margin-bottom: 10px; }
 .meaning { color: var(--ink); font-size: 20px; line-height: 1.32; margin-bottom: 10px; }
 .example { color: var(--muted); font-size: 14px; line-height: 1.55; border-left: 3px solid rgba(85,214,255,.5); padding-left: 10px; }
@@ -171,16 +175,30 @@ body:not([data-view="learn"]) .stats { display: none; }
 .tag.bad { background: rgba(255,109,100,.14); color: var(--red); }
 .word-actions { display: flex; align-items: center; gap: 8px; flex: 0 0 auto; }
 .mini-speak { width: 38px; height: 38px; display: inline-flex; align-items: center; justify-content: center; border-radius: 13px; color: var(--blue); background: rgba(85,214,255,.09); border: 1px solid rgba(85,214,255,.2); }
-.practice { background: linear-gradient(180deg, rgba(255,255,255,.1), rgba(255,255,255,.045)); border: 1px solid rgba(255,255,255,.15); border-radius: 26px; padding: 18px; box-shadow: var(--shadow); }
+.practice { background: linear-gradient(180deg, rgba(255,255,255,.105), rgba(255,255,255,.045)); border: 1px solid rgba(255,255,255,.15); border-radius: 26px; padding: 18px; box-shadow: var(--shadow); position: relative; overflow: hidden; }
+.practice::before { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(135deg, rgba(245,182,78,.12), transparent 38%), linear-gradient(315deg, rgba(61,243,163,.11), transparent 42%); opacity: .8; }
+.practice > * { position: relative; z-index: 1; }
+.practice.mood-ok { animation: cardGlow .68s ease; border-color: rgba(61,243,163,.46); }
+.practice.mood-no { animation: softShake .38s ease; border-color: rgba(255,109,100,.42); }
 .prompt { color: var(--muted); font-size: 13px; margin-bottom: 10px; }
 .hint-word { min-height: 34px; color: var(--gold); font-size: 34px; font-weight: 900; letter-spacing: 0; margin-bottom: 10px; word-break: break-word; text-shadow: 0 0 28px rgba(245,182,78,.18); }
 .hint-word.hidden { color: var(--muted); font-size: 16px; font-weight: 500; }
+.hint-word.reveal { animation: wordPop .36s cubic-bezier(.2, .8, .2, 1); }
+.answer-wrap { position: relative; }
 input, textarea { width: 100%; min-height: 52px; border: 1px solid var(--line); border-radius: 16px; background: rgba(0,0,0,.23); color: var(--text); padding: 13px 14px; outline: none; }
 textarea { min-height: 118px; resize: vertical; line-height: 1.45; }
 input:focus, textarea:focus { border-color: rgba(85,214,255,.72); box-shadow: 0 0 0 3px rgba(85,214,255,.08); }
+.answer-wrap.ok input { border-color: rgba(61,243,163,.7); box-shadow: 0 0 0 3px rgba(61,243,163,.09), 0 0 26px rgba(61,243,163,.12); }
+.answer-wrap.no input { border-color: rgba(255,109,100,.72); box-shadow: 0 0 0 3px rgba(255,109,100,.1), 0 0 24px rgba(255,109,100,.12); animation: inputBuzz .34s ease; }
+.reaction { position: absolute; right: 12px; top: 50%; transform: translateY(-50%) scale(.7); width: 30px; height: 30px; display: grid; place-items: center; border-radius: 50%; opacity: 0; pointer-events: none; font-weight: 900; }
+.reaction.ok { background: rgba(61,243,163,.18); color: var(--green); }
+.reaction.no { background: rgba(255,109,100,.17); color: var(--red); }
+.reaction.show { animation: reactionPop .54s ease forwards; }
 .feedback { min-height: 42px; margin: 10px 0; color: var(--muted); font-size: 14px; line-height: 1.45; }
-.feedback.ok { color: var(--green); }
-.feedback.no { color: var(--red); }
+.feedback.ok, .feedback.no { border: 1px solid rgba(255,255,255,.12); border-radius: 16px; padding: 11px 12px; background: rgba(255,255,255,.06); animation: feedbackIn .24s ease; }
+.feedback.ok { color: var(--green); border-color: rgba(61,243,163,.22); background: rgba(61,243,163,.08); }
+.feedback.no { color: #ffc1ba; border-color: rgba(255,109,100,.26); background: rgba(255,109,100,.09); }
+.feedback b { color: var(--ink); }
 .bar { height: 9px; background: rgba(255,255,255,.09); border-radius: 999px; overflow: hidden; margin: 14px 0 2px; }
 .bar i { display: block; height: 100%; width: 0%; background: linear-gradient(90deg, var(--green), var(--blue)); border-radius: inherit; transition: width .25s ease; box-shadow: 0 0 18px rgba(61,243,163,.4); }
 .settings { display: grid; gap: 12px; }
@@ -188,6 +206,9 @@ input:focus, textarea:focus { border-color: rgba(85,214,255,.72); box-shadow: 0 
 .empty { color: var(--muted); text-align: center; padding: 28px 8px; }
 .toast { position: fixed; left: 50%; bottom: calc(78px + env(safe-area-inset-bottom)); transform: translateX(-50%); max-width: calc(100% - 34px); background: var(--ink); color: #10100d; border-radius: 999px; padding: 10px 14px; font-size: 14px; box-shadow: 0 12px 40px rgba(0,0,0,.35); opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s; z-index: 20; }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(-6px); }
+.burst-layer { position: fixed; inset: 0; overflow: hidden; pointer-events: none; z-index: 30; }
+.spark { position: absolute; left: var(--x); top: var(--y); width: var(--s); height: var(--s); border-radius: 999px; background: var(--c); box-shadow: 0 0 18px var(--c); transform: translate(-50%, -50%); animation: sparkFly .78s cubic-bezier(.2,.8,.2,1) forwards; }
+.ripple { position: fixed; left: var(--x); top: var(--y); width: 18px; height: 18px; border: 2px solid var(--c); border-radius: 999px; transform: translate(-50%, -50%); animation: rippleOut .62s ease forwards; pointer-events: none; z-index: 29; }
 @media (prefers-reduced-motion: no-preference) {
   .mission-card { animation: riseIn .42s ease both; }
   .today { animation: riseIn .48s ease both; }
@@ -197,6 +218,44 @@ input:focus, textarea:focus { border-color: rgba(85,214,255,.72); box-shadow: 0 
 @keyframes riseIn {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
+}
+@keyframes wordPop {
+  0% { opacity: .2; transform: translateY(7px) scale(.98); filter: blur(2px); }
+  100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+}
+@keyframes cardGlow {
+  0% { transform: scale(1); }
+  38% { transform: scale(1.012); box-shadow: 0 0 0 1px rgba(61,243,163,.28), 0 0 42px rgba(61,243,163,.18), var(--shadow); }
+  100% { transform: scale(1); }
+}
+@keyframes softShake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  55% { transform: translateX(4px); }
+  78% { transform: translateX(-2px); }
+}
+@keyframes inputBuzz {
+  0%, 100% { transform: translateX(0); }
+  30% { transform: translateX(-3px); }
+  60% { transform: translateX(3px); }
+}
+@keyframes reactionPop {
+  0% { opacity: 0; transform: translateY(-50%) scale(.58) rotate(-12deg); }
+  40% { opacity: 1; transform: translateY(-50%) scale(1.08) rotate(5deg); }
+  100% { opacity: 1; transform: translateY(-50%) scale(1) rotate(0); }
+}
+@keyframes feedbackIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes sparkFly {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(.5); }
+  18% { opacity: 1; }
+  100% { opacity: 0; transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(.2); }
+}
+@keyframes rippleOut {
+  0% { opacity: .8; transform: translate(-50%, -50%) scale(.5); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(5.2); }
 }
 @media (max-width: 360px) {
   .app { padding-left: 12px; padding-right: 12px; }
@@ -218,7 +277,7 @@ input:focus, textarea:focus { border-color: rgba(85,214,255,.72); box-shadow: 0 
         <span class="brand-mark" aria-hidden="true">
           <svg viewBox="0 0 24 24"><path d="M6 17V5h9a3 3 0 0 1 0 6H9"></path><path d="M9 11h7a3 3 0 0 1 0 6H6"></path></svg>
         </span>
-        <div class="kicker">WORD MASTER</div>
+        <div class="kicker">WORD CAMP</div>
       </div>
       <h1>每日单词</h1>
       <div class="date" id="dateText"></div>
@@ -231,8 +290,8 @@ input:focus, textarea:focus { border-color: rgba(85,214,255,.72); box-shadow: 0 
 
   <section class="mission-card">
     <div>
-      <div class="mission-label">DAILY QUEST</div>
-      <h2>今日词力挑战</h2>
+      <div class="mission-label">TODAY'S PATH</div>
+      <h2>今日小目标</h2>
       <p id="missionText">完成今日 10 个词，保持学习节奏。</p>
       <div class="mission-cores" id="missionCores"></div>
     </div>
@@ -298,7 +357,10 @@ input:focus, textarea:focus { border-color: rgba(85,214,255,.72); box-shadow: 0 
       <button class="btn speak" id="speakPracticeBtn" style="width:100%; margin: 0 0 12px;">朗读当前单词</button>
       <div class="meaning" id="practiceMeaning"></div>
       <div class="example" id="practiceExample"></div>
-      <input id="answerInput" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="输入英文单词">
+      <div class="answer-wrap" id="answerWrap">
+        <input id="answerInput" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="输入英文单词">
+        <span class="reaction" id="reactionMark" aria-hidden="true"></span>
+      </div>
       <div class="feedback" id="feedback"></div>
       <div class="row">
         <button class="btn blue" id="checkBtn">检查</button>
@@ -362,6 +424,7 @@ input:focus, textarea:focus { border-color: rgba(85,214,255,.72); box-shadow: 0 
   </button>
 </nav>
 <div class="toast" id="toast"></div>
+<div class="burst-layer" id="burstLayer" aria-hidden="true"></div>
 
 <script>
 const WORDS_PER_DAY = 10;
@@ -486,6 +549,76 @@ function toast(msg) {
   clearTimeout(window.__toastTimer);
   window.__toastTimer = setTimeout(() => $("toast").classList.remove("show"), 1800);
 }
+function prefersReducedMotion() {
+  return window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+function haptic(type = "tap") {
+  if (!navigator.vibrate) return;
+  const pattern = type === "ok" ? [12, 35, 18] : type === "no" ? [45] : [12];
+  navigator.vibrate(pattern);
+}
+function replayClass(el, className) {
+  if (!el || prefersReducedMotion()) return;
+  el.classList.remove(className);
+  void el.offsetWidth;
+  el.classList.add(className);
+}
+function setAnswerMood(kind) {
+  const wrap = $("answerWrap");
+  const card = document.querySelector(".practice");
+  const mark = $("reactionMark");
+  wrap.classList.remove("ok", "no");
+  card.classList.remove("mood-ok", "mood-no");
+  mark.className = "reaction";
+  mark.textContent = "";
+  if (!kind) return;
+  wrap.classList.add(kind);
+  card.classList.add(kind === "ok" ? "mood-ok" : "mood-no");
+  mark.textContent = kind === "ok" ? "✓" : "!";
+  mark.classList.add(kind, "show");
+}
+function clearAnswerMood() {
+  setAnswerMood("");
+}
+function feedback(kind, html) {
+  $("feedback").innerHTML = html;
+  $("feedback").className = `feedback ${kind || ""}`.trim();
+}
+function burstFromElement(el, kind = "ok") {
+  if (!el || prefersReducedMotion()) return;
+  const rect = el.getBoundingClientRect();
+  const x = rect.left + rect.width / 2;
+  const y = rect.top + rect.height / 2;
+  const colors = kind === "ok"
+    ? ["#3df3a3", "#55d6ff", "#f5b64e", "#ffcf91"]
+    : ["#ff6d64", "#ff5c8a", "#f5b64e"];
+  const layer = $("burstLayer");
+  const ripple = document.createElement("span");
+  ripple.className = "ripple";
+  ripple.style.setProperty("--x", `${x}px`);
+  ripple.style.setProperty("--y", `${y}px`);
+  ripple.style.setProperty("--c", kind === "ok" ? "rgba(61,243,163,.6)" : "rgba(255,109,100,.55)");
+  layer.appendChild(ripple);
+  setTimeout(() => ripple.remove(), 700);
+  const count = kind === "ok" ? 18 : 9;
+  for (let i = 0; i < count; i += 1) {
+    const spark = document.createElement("span");
+    const angle = -Math.PI / 2 + (Math.random() - .5) * (kind === "ok" ? 2.6 : 1.3);
+    const distance = kind === "ok" ? 46 + Math.random() * 82 : 22 + Math.random() * 46;
+    spark.className = "spark";
+    spark.style.setProperty("--x", `${x + (Math.random() - .5) * 24}px`);
+    spark.style.setProperty("--y", `${y + (Math.random() - .5) * 18}px`);
+    spark.style.setProperty("--dx", `${Math.cos(angle) * distance}px`);
+    spark.style.setProperty("--dy", `${Math.sin(angle) * distance}px`);
+    spark.style.setProperty("--s", `${4 + Math.random() * 7}px`);
+    spark.style.setProperty("--c", colors[i % colors.length]);
+    layer.appendChild(spark);
+    setTimeout(() => spark.remove(), 850);
+  }
+}
+function animateCurrentWord() {
+  replayClass($("focusWord"), "word-pop");
+}
 function englishVoice() {
   const voices = window.speechSynthesis.getVoices();
   return voices.find(v => /^en[-_]/i.test(v.lang));
@@ -568,6 +701,7 @@ function renderFocus() {
   $("focusPosition").textContent = `${focusIndex + 1}/${todayWords.length}${w.review ? " · 复习" : ""}`;
   $("knownBtn").textContent = state.done[doneKey(w.word)] ? "已记住" : "记住了";
   document.querySelector(".today").classList.toggle("is-done", !!state.done[doneKey(w.word)]);
+  animateCurrentWord();
 }
 function renderWordList() {
   let index = 0;
@@ -635,8 +769,8 @@ function currentPracticeWord() {
 }
 function startPractice() {
   practice = { pool: wordsForToday(), wordIndex: 0, round: 1, done: 0 };
-  $("feedback").textContent = "";
-  $("feedback").className = "feedback";
+  feedback("", "");
+  clearAnswerMood();
   $("answerInput").value = "";
   $("checkBtn").disabled = false;
   renderPractice();
@@ -648,12 +782,14 @@ function renderPractice() {
   $("practicePrompt").textContent = `第 ${practice.wordIndex + 1}/${practice.pool.length} 个。前 7 遍给你看单词，后 3 遍凭记忆。`;
   $("practiceHint").textContent = showHint ? w.word : "隐藏单词，凭记忆输入";
   $("practiceHint").classList.toggle("hidden", !showHint);
+  replayClass($("practiceHint"), "reveal");
   $("practiceMeaning").textContent = w.meaning;
   $("practiceExample").textContent = w.example || "";
   $("practiceBar").style.width = `${practice.done / (practice.pool.length * 10) * 100}%`;
   $("answerInput").focus();
 }
 function nextPracticeWord() {
+  clearAnswerMood();
   practice.done += 1;
   practice.wordIndex += 1;
   if (practice.wordIndex >= practice.pool.length) {
@@ -664,9 +800,10 @@ function nextPracticeWord() {
     practice.pool.forEach(w => state.done[doneKey(w.word)] = true);
     saveState();
     render();
-    $("feedback").textContent = "今日拼写练习完成。";
-    $("feedback").className = "feedback ok";
+    feedback("ok", "今日拼写练习完成。");
     $("checkBtn").disabled = true;
+    burstFromElement($("practiceBar"), "ok");
+    haptic("ok");
     toast("今日 10 个单词已完成");
     return;
   }
@@ -676,15 +813,19 @@ function nextPracticeWord() {
 function checkAnswer() {
   const w = currentPracticeWord();
   if (clean($("answerInput").value) === clean(w.word)) {
-    $("feedback").textContent = "正确。";
-    $("feedback").className = "feedback ok";
+    setAnswerMood("ok");
+    feedback("ok", `答对了。<b>${escapeHtml(w.word)}</b> 已点亮。`);
+    burstFromElement($("checkBtn"), "ok");
+    haptic("ok");
     state.done[doneKey(w.word)] = true;
     delete state.mistakes[w.word];
     saveState();
-    setTimeout(nextPracticeWord, 260);
+    setTimeout(nextPracticeWord, prefersReducedMotion() ? 180 : 620);
   } else {
-    $("feedback").innerHTML = `不对，正确拼写是 <b>${w.word}</b>。这个词已加入错词复习。`;
-    $("feedback").className = "feedback no";
+    setAnswerMood("no");
+    feedback("no", `差一点。正确拼写是 <b>${escapeHtml(w.word)}</b>，已经放进错词复习。`);
+    burstFromElement($("answerInput"), "no");
+    haptic("no");
     state.mistakes[w.word] = w;
     saveState();
   }
@@ -748,11 +889,13 @@ $("prevBtn").addEventListener("click", () => {
   const count = wordsForToday().length;
   focusIndex = (focusIndex + count - 1) % count;
   renderFocus();
+  haptic("tap");
 });
 $("nextBtn").addEventListener("click", () => {
   const count = wordsForToday().length;
   focusIndex = (focusIndex + 1) % count;
   renderFocus();
+  haptic("tap");
 });
 $("knownBtn").addEventListener("click", () => {
   const w = wordsForToday()[focusIndex];
@@ -760,13 +903,21 @@ $("knownBtn").addEventListener("click", () => {
   delete state.mistakes[w.word];
   saveState();
   render();
+  replayClass(document.querySelector(".today"), "flash-ok");
+  burstFromElement($("knownBtn"), "ok");
+  haptic("ok");
   toast("已记录");
 });
 $("speakFocusBtn").addEventListener("click", () => speakWord(wordsForToday()[focusIndex].word));
 $("speakAllBtn").addEventListener("click", speakTodayWords);
 $("speakPracticeBtn").addEventListener("click", () => speakWord(currentPracticeWord().word));
 $("checkBtn").addEventListener("click", checkAnswer);
-$("skipBtn").addEventListener("click", nextPracticeWord);
+$("skipBtn").addEventListener("click", () => {
+  feedback("", "");
+  clearAnswerMood();
+  nextPracticeWord();
+});
+$("answerInput").addEventListener("input", clearAnswerMood);
 $("answerInput").addEventListener("keydown", e => { if (e.key === "Enter") checkAnswer(); });
 $("clearMistakes").addEventListener("click", () => { state.mistakes = {}; saveState(); renderMistakes(); toast("错词已清空"); });
 $("importBtn").addEventListener("click", importWords);
