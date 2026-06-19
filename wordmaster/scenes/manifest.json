@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-19T03:41:10.755Z",
+  "generatedAt": "2026-06-19T12:18:25.915Z",
   "model": "google/gemini-2.5-flash-image",
   "startDate": "2026-06-01",
   "images": {
@@ -273,5 +273,6 @@
       "prompt": "Photorealistic vertical 9:16 smartphone background for learning the English vocabulary phrase \"parent meeting\". Meaning in Chinese: 家长会. Example context: The parent meeting is tonight.. Scene: a warm home interior with family life, soft light, and a cozy room. High-end editorial documentary photography, cinematic natural light, realistic people and objects, shallow depth of field, warm but modern, visually memorable. No visible text, no letters, no captions, no watermark, no UI, no logo.",
       "generatedAt": "2026-06-19T03:41:10.755Z"
     }
-  }
+  },
+  "strategy": "pexels-pixabay-pollinations"
 }
