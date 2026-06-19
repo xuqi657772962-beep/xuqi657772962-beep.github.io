@@ -812,12 +812,23 @@ function scenePhotoTerms(word, kind) {
   }
   return [...new Set(terms.filter(Boolean))].slice(0, 4);
 }
+function sceneFallbackPrompt(word, kind) {
+  const terms = scenePhotoTerms(word, kind).join(", ");
+  const example = word.example ? `Example situation: ${word.example}.` : "";
+  return [
+    "Photorealistic vertical 9:16 smartphone wallpaper",
+    `showing a clear real-life scene for the English vocabulary phrase "${word.word}"`,
+    `meaning "${word.meaning}"`,
+    example,
+    `visual context: ${terms}`,
+    "natural cinematic lighting, warm human feeling, realistic objects, strong depth, no text, no letters, no subtitles, no UI, no logo"
+  ].filter(Boolean).join(". ");
+}
 function scenePhotoFor(word, kind) {
   const asset = sceneManifest[sceneAssetKey(word)];
   if (asset && asset.src) return asset.src;
-  const terms = scenePhotoTerms(word, kind).join(",");
   const lock = 1000 + (hashScene(`${word.word}-${word.meaning}`) % 8000);
-  return `https://loremflickr.com/1200/1800/${terms}?lock=${lock}`;
+  return `https://image.pollinations.ai/prompt/${encodeURIComponent(sceneFallbackPrompt(word, kind))}?width=900&height=1600&seed=${lock}&nologo=true&enhance=true&model=flux`;
 }
 function updateScenePhoto(word, kind) {
   const asset = sceneManifest[sceneAssetKey(word)];
