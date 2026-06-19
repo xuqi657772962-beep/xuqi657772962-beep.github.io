@@ -1,0 +1,44 @@
+name: Generate Word Scene Images
+
+on:
+  schedule:
+    - cron: "20 8 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    env:
+      TZ: America/Los_Angeles
+      WORDMASTER_SCENE_START_DATE: "2026-06-01"
+      WORDMASTER_SCENE_DAYS_AHEAD: "2"
+      WORDMASTER_SCENE_MAX_GENERATIONS: "30"
+      WORDMASTER_SCENE_IMAGE_SIZE: "1K"
+      OPENROUTER_IMAGE_MODEL: "google/gemini-2.5-flash-image"
+      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Generate scene images
+        run: node scripts/generate-scenes.mjs
+
+      - name: Commit generated scenes
+        run: |
+          if git diff --quiet -- wordmaster/scenes; then
+            echo "No generated scene changes."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add wordmaster/scenes
+          git commit -m "Generate word scene images"
+          git push
