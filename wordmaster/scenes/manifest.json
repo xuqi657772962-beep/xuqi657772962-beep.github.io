@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-19T12:18:25.915Z",
+  "generatedAt": "2026-06-20T10:48:14.186Z",
   "model": "google/gemini-2.5-flash-image",
   "startDate": "2026-06-01",
   "images": {
@@ -272,6 +272,126 @@
       "model": "google/gemini-2.5-flash-image",
       "prompt": "Photorealistic vertical 9:16 smartphone background for learning the English vocabulary phrase \"parent meeting\". Meaning in Chinese: 家长会. Example context: The parent meeting is tonight.. Scene: a warm home interior with family life, soft light, and a cozy room. High-end editorial documentary photography, cinematic natural light, realistic people and objects, shallow depth of field, warm but modern, visually memorable. No visible text, no letters, no captions, no watermark, no UI, no logo.",
       "generatedAt": "2026-06-19T03:41:10.755Z"
+    },
+    "time-6679": {
+      "src": "scenes/time-6679.jpg",
+      "word": "time",
+      "meaning": "时间",
+      "core": "time",
+      "provider": "pollinations",
+      "sourceUrl": "https://pollinations.ai/",
+      "attribution": "Generated with Pollinations",
+      "query": "",
+      "prompt": "Photorealistic vertical 9:16 smartphone background for learning the English vocabulary phrase \"time\". Meaning in Chinese: 时间. Example context: Use your time well.. Scene: a natural everyday real-life situation. High-end editorial documentary photography, cinematic natural light, realistic people and objects, shallow depth of field, warm but modern, visually memorable. No visible text, no letters, no captions, no watermark, no UI, no logo.",
+      "generatedAt": "2026-06-20T10:41:29.047Z"
+    },
+    "daytime-42135": {
+      "src": "scenes/daytime-42135.jpg",
+      "word": "daytime",
+      "meaning": "白天",
+      "core": "time",
+      "provider": "pollinations",
+      "sourceUrl": "https://pollinations.ai/",
+      "attribution": "Generated with Pollinations",
+      "query": "",
+      "prompt": "Photorealistic vertical 9:16 smartphone background for learning the English vocabulary phrase \"daytime\". Meaning in Chinese: 白天. Example context: I study English in the daytime.. Scene: a natural everyday real-life situation. High-end editorial documentary photography, cinematic natural light, realistic people and objects, shallow depth of field, warm but modern, visually memorable. No visible text, no letters, no captions, no watermark, no UI, no logo.",
+      "generatedAt": "2026-06-20T10:42:14.270Z"
+    },
+    "bedtime-90988": {
+      "src": "scenes/bedtime-90988.jpg",
+      "word": "bedtime",
+      "meaning": "睡觉时间",
+      "core": "time",
+      "provider": "pollinations",
+      "sourceUrl": "https://pollinations.ai/",
+      "attribution": "Generated with Pollinations",
+      "query": "",
+      "prompt": "Photorealistic vertical 9:16 smartphone background for learning the English vocabulary phrase \"bedtime\". Meaning in Chinese: 睡觉时间. Example context: My bedtime is ten o clock.. Scene: a warm home interior with family life, soft light, and a cozy room. High-end editorial documentary photography, cinematic natural light, realistic people and objects, shallow depth of field, warm but modern, visually memorable. No visible text, no letters, no captions, no watermark, no UI, no logo.",
+      "generatedAt": "2026-06-20T10:42:59.267Z"
+    },
+    "lifetime-73922": {
+      "src": "scenes/lifetime-73922.jpg",
+      "word": "lifetime",
+      "meaning": "一生；终身",
+      "core": "time",
+      "provider": "pollinations",
+      "sourceUrl": "https://pollinations.ai/",
+      "attribution": "Generated with Pollinations",
+      "query": "",
+      "prompt": "Photorealistic vertical 9:16 smartphone background for learning the English vocabulary phrase \"lifetime\". Meaning in Chinese: 一生；终身. Example context: Learning is a lifetime habit.. Scene: a healthy lifestyle scene with morning light, exercise or fresh food, realistic and calm. High-end editorial documentary photography, cinematic natural light, realistic people and objects, shallow depth of field, warm but modern, visually memorable. No visible text, no letters, no captions, no watermark, no UI, no logo.",
+      "generatedAt": "2026-06-20T10:43:44.050Z"
+    },
+    "timetable-11511": {
+      "src": "scenes/timetable-11511.jpg",
+      "word": "timetable",
+      "meaning": "时间表",
+      "core": "time",
+      "provider": "pollinations",
+      "sourceUrl": "https://pollinations.ai/",
+      "attribution": "Generated with Pollinations",
+      "query": "",
+      "prompt": "Photorealistic vertical 9:16 smartphone background for learning the English vocabulary phrase \"timetable\". Meaning in Chinese: 时间表. Example context: Check your timetable before class.. Scene: a natural everyday real-life situation. High-end editorial documentary photography, cinematic natural light, realistic people and objects, shallow depth of field, warm but modern, visually memorable. No visible text, no letters, no captions, no watermark, no UI, no logo.",
+      "generatedAt": "2026-06-20T10:44:29.375Z"
+    },
+    "people-16297": {
+      "src": "scenes/people-16297.jpg",
+      "word": "people",
+      "meaning": "人们",
+      "core": "people",
+      "provider": "pollinations",
+      "sourceUrl": "https://pollinations.ai/",
+      "attribution": "Generated with Pollinations",
+      "query": "",
+      "prompt": "Photorealistic vertical 9:16 smartphone background for learning the English vocabulary phrase \"people\". Meaning in Chinese: 人们. Example context: Many people use English every day.. Scene: people talking naturally in a cafe or shared workspace, warm social atmosphere. High-end editorial documentary photography, cinematic natural light, realistic people and objects, shallow depth of field, warm but modern, visually memorable. No visible text, no letters, no captions, no watermark, no UI, no logo.",
+      "generatedAt": "2026-06-20T10:45:14.974Z"
+    },
+    "young-people-99652": {
+      "src": "scenes/young-people-99652.jpg",
+      "word": "young people",
+      "meaning": "年轻人",
+      "core": "people",
+      "provider": "pollinations",
+      "sourceUrl": "https://pollinations.ai/",
+      "attribution": "Generated with Pollinations",
+      "query": "",
+      "prompt": "Photorealistic vertical 9:16 smartphone background for learning the English vocabulary phrase \"young people\". Meaning in Chinese: 年轻人. Example context: Young people learn fast.. Scene: people talking naturally in a cafe or shared workspace, warm social atmosphere. High-end editorial documentary photography, cinematic natural light, realistic people and objects, shallow depth of field, warm but modern, visually memorable. No visible text, no letters, no captions, no watermark, no UI, no logo.",
+      "generatedAt": "2026-06-20T10:45:59.537Z"
+    },
+    "old-people-53495": {
+      "src": "scenes/old-people-53495.jpg",
+      "word": "old people",
+      "meaning": "老人",
+      "core": "people",
+      "provider": "pollinations",
+      "sourceUrl": "https://pollinations.ai/",
+      "attribution": "Generated with Pollinations",
+      "query": "",
+      "prompt": "Photorealistic vertical 9:16 smartphone background for learning the English vocabulary phrase \"old people\". Meaning in Chinese: 老人. Example context: Old people need care.. Scene: a warm home care scene with an elderly person receiving kind support from family. High-end editorial documentary photography, cinematic natural light, realistic people and objects, shallow depth of field, warm but modern, visually memorable. No visible text, no letters, no captions, no watermark, no UI, no logo.",
+      "generatedAt": "2026-06-20T10:46:44.424Z"
+    },
+    "people-skills-33382": {
+      "src": "scenes/people-skills-33382.jpg",
+      "word": "people skills",
+      "meaning": "人际交往能力",
+      "core": "people",
+      "provider": "pollinations",
+      "sourceUrl": "https://pollinations.ai/",
+      "attribution": "Generated with Pollinations",
+      "query": "",
+      "prompt": "Photorealistic vertical 9:16 smartphone background for learning the English vocabulary phrase \"people skills\". Meaning in Chinese: 人际交往能力. Example context: People skills help at work.. Scene: people talking naturally in a cafe or shared workspace, warm social atmosphere. High-end editorial documentary photography, cinematic natural light, realistic people and objects, shallow depth of field, warm but modern, visually memorable. No visible text, no letters, no captions, no watermark, no UI, no logo.",
+      "generatedAt": "2026-06-20T10:47:29.651Z"
+    },
+    "people-person-39439": {
+      "src": "scenes/people-person-39439.jpg",
+      "word": "people person",
+      "meaning": "善于交际的人",
+      "core": "people",
+      "provider": "pollinations",
+      "sourceUrl": "https://pollinations.ai/",
+      "attribution": "Generated with Pollinations",
+      "query": "",
+      "prompt": "Photorealistic vertical 9:16 smartphone background for learning the English vocabulary phrase \"people person\". Meaning in Chinese: 善于交际的人. Example context: She is a real people person.. Scene: people talking naturally in a cafe or shared workspace, warm social atmosphere. High-end editorial documentary photography, cinematic natural light, realistic people and objects, shallow depth of field, warm but modern, visually memorable. No visible text, no letters, no captions, no watermark, no UI, no logo.",
+      "generatedAt": "2026-06-20T10:48:14.186Z"
     }
   },
   "strategy": "pexels-pixabay-pollinations"
